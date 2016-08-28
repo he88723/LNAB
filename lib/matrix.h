@@ -6,7 +6,7 @@ namespace Matrix
 
 Matrix reciprocal(const Matrix&);
 
-Matrix msolution(const Matrix);
+Matrix solution(const Matrix);
 
 template<class Type>
 Type det(const Matrix&)
@@ -15,6 +15,8 @@ Type det(const Matrix&)
 template<class Type>
 Type dot_Product(Matrix first, Matrix second)
 {}
+
+enum operate{Add, Minus, Mutiply, Divide};
 
 template<class Type>
 class Matrix
@@ -40,6 +42,23 @@ public:
 		else
 			mainData = nullptr;
 		
+	}
+
+	Matrix(const Matrix& matrix) : rowCount[matrix.rowCount] , colCount{matrix.colCount}
+	{
+	
+		mainData = new Type*[rowCount];
+
+		for(int i=0; i<rowCount ;++i)
+		{
+		
+			mainData[i] = new Type[colCount];
+
+			for(int j=0; j<colCount ;++j)
+				mainData[i][j] = matrix[i][j];
+		
+		}
+	
 	}
 
 	~Matrix()
@@ -78,6 +97,66 @@ public:
 	bool  	operator==(const Matrix&);
 	bool	operator!=(const Matrix& matched)
 	{return !(*this == matched);}
+
+	void inlineOperate(int lineCount, Type value, operate op)
+	{
+		switch(op)
+		{
+			case operate::Add:
+				for(int i=0; i<rowCount ;++i)
+					mainData[i][lineCount] += value;
+				break;
+
+			case operate::Minus:
+				for(int i=0; i<rowCount ;++i)
+					mainData[i][lineCount] -= value;
+				break;
+
+			case operate::Mutiply:
+				for(int i=0; i<rowCount ;++i)
+					mainData[i][lineCount] *= value;
+				break;
+
+			case operate::Divide:
+				for(int i=0; i<rowCount ;++i)
+					mainData[i][lineCount] /= value;
+				break;
+		
+			default:
+				return;
+		}
+	}
+
+	void lnlOperate(int firstLine, int secondLine, operate op, Type rate = 1)
+	{
+		switch(op)
+		{
+			case operate::Add:
+				for(int i=0; i<rowCount ;++i)
+					mainData[i][firstLine] += mainData[i][secondLine]*rate;
+				break;
+
+			case operate::Minus:
+				for(int i=0; i<rowCount ;++i)
+					mainData[i][firstLine] -= mainData[i][secondLine]*rate;
+				break;
+
+			case operate::Mutiply:
+				for(int i=0; i<rowCount ;++i)
+					mainData[i][firstLine] *= mainData[i][secondLine]*rate;
+				break;
+
+			case operate::Divide:
+				for(int i=0; i<rowCount ;++i)
+					mainData[i][firstLine] += mainData[i][secondLine]*rate;
+				break;
+
+			default:
+				return;
+		}
+	}
+
+	Matrix& changeLine(int colNum);
 
 	int colCount ,rowCount;
 

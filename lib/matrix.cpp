@@ -1,5 +1,14 @@
 #include "matrix.h"
 
+template<class Type>
+int whereFirst(Type* data, int count)
+{
+	for(int i=0; i<count ;++i)
+		if(data[i])
+			return i;	
+}
+
+//For Matrix Class~
 Matrix Matrix::operator+(const Matrix& added)
 {
 
@@ -67,6 +76,7 @@ Matrix& Matrix::operator=(Matrix& designated)
 			designated[i][j] = *this[i][j];
 	}
 
+	return *this;
 }
 
 bool Matrix::operator==(const Matrix& matched)
@@ -83,4 +93,39 @@ bool Matrix::operator==(const Matrix& matched)
 				return false;
 	}
 	return true;
+}
+
+Matrix& changeLine(int first, int second)
+{
+
+	auto buf = this->mainData[0];
+
+	for(int i=0; i<rowCount ;++i)
+		buf[i] = mainData[i][first];
+
+	for(int i=0; i<rowCount ;++i)
+		mainData[i][first] = mainData[i][second];
+
+	for(int i=0; i<rowCount ;++i)
+		mainData[i][second] = buf[i];
+	
+	return *this;
+}
+
+Matrix Matrix::solution(const Matrix& matrix)
+{
+
+	Matrix rt{matrix};
+
+	while(true)
+	{
+	
+		for(int i=0; i<rt.colCount ;++i)
+		{
+		
+			if()				
+
+		}
+	}
+
 }
