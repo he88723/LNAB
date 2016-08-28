@@ -4,10 +4,6 @@
 namespace Matrix
 {
 
-Matrix reciprocal(const Matrix&);
-
-Matrix solution(const Matrix);
-
 template<class Type>
 Type det(const Matrix&)
 {}
@@ -157,6 +153,9 @@ public:
 	}
 
 	Matrix& changeLine(int colNum);
+	Matrix whereFirst(int count);
+	void solution();
+	void reciprocal();
 
 	int colCount ,rowCount;
 

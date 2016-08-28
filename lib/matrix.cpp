@@ -1,11 +1,11 @@
 #include "matrix.h"
 
-template<class Type>
-int whereFirst(Type* data, int count)
+int Matrix::whereFirst(int count)
 {
 	for(int i=0; i<count ;++i)
-		if(data[i])
+		if(mainData[i][count])
 			return i;	
+	return -1;
 }
 
 //For Matrix Class~
@@ -112,20 +112,32 @@ Matrix& changeLine(int first, int second)
 	return *this;
 }
 
-Matrix Matrix::solution(const Matrix& matrix)
+void Matrix::solution()
 {
-
-	Matrix rt{matrix};
 
 	while(true)
 	{
-	
-		for(int i=0; i<rt.colCount ;++i)
+
+		for(int i=0; i<colCount ;++i)
 		{
-		
-			if()				
+			int status{whereFirst(i)};
+
+			if(status == -1 || status == rowCount-1)
+				return *this;
+			//The status is illogical.			
+
+			inlineOperate(i, 1/mainData[status][i], Matrix::operate::Mutiply);
+
+			for(int i=0; i<colCount ;++j)
+			{
+				if(!mainData[status][j])
+					continue;
+				lnlOperate(j, i, Matrix::operate::Minus, mainData[status][j]);
+			}
 
 		}
 	}
 
+	descend_arrange();
+	optimize();
 }
