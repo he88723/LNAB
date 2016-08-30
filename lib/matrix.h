@@ -152,10 +152,17 @@ public:
 		}
 	}
 
-	Matrix& changeLine(int colNum);
-	Matrix whereFirst(int count);
+	int whereFirst(int count);
+
+	void changeLine(int colNum);
+
 	void solution();
-	void reciprocal();
+
+//	void reciprocal();
+
+	void descend_arrange();
+
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 	int colCount ,rowCount;
 

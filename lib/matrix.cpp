@@ -1,5 +1,40 @@
 #include "matrix.h"
 
+void merge_recursive(int in[], int reg[], int start, int end)
+{
+
+	if(start>=end)
+		return;
+
+	int start1{start};
+	int start2{(end-start)>>1+start};
+	int end1{(end-start)>>1+start};
+	int end2{end};
+
+	merge_recursive(in, reg, start1, end1);
+	merge_recursive(in, reg, start2, end2);
+
+	int k{start};
+	while(start1 <= end1 && start2 <= end2)
+		reg[k++] = in[start1] < in[start2]?in[start1++]:in[start2];
+	while(start1 <= end1)
+		reg[k++] = in[start1++];
+	while(start2 <= end2)
+		reg[k++] = in[start2++];
+
+	for(k=start; k<end ; ++k)
+		in[k] = reg[k];
+}
+
+void arrange(int in[], int len)
+{
+
+	int reg[];
+	merge_recursive(in, reg, 0, len-1);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+
 int Matrix::whereFirst(int count)
 {
 	for(int i=0; i<count ;++i)
@@ -95,8 +130,10 @@ bool Matrix::operator==(const Matrix& matched)
 	return true;
 }
 
-Matrix& changeLine(int first, int second)
+void changeLine(int first, int second)
 {
+	if(first == second)
+		return;
 
 	auto buf = this->mainData[0];
 
@@ -108,8 +145,20 @@ Matrix& changeLine(int first, int second)
 
 	for(int i=0; i<rowCount ;++i)
 		mainData[i][second] = buf[i];
-	
-	return *this;
+}
+
+void Matrix::descend_arrange()
+{
+
+	int lineRef[colCount];
+
+	for(int i=0; i<colCount ;++i)
+		lineRef[i] = whereFirst(i);
+
+	arrange(lineRef, colCount);
+
+	for(int i=0; i<colCount ;++i)
+		changeLine(i,lineRef[i]);
 }
 
 void Matrix::solution()
@@ -139,5 +188,4 @@ void Matrix::solution()
 	}
 
 	descend_arrange();
-	optimize();
 }
