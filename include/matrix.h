@@ -1,9 +1,10 @@
 #ifndef Matrix_H
 #define Matrix_H
 
-namespace Matrix
+namespace Math
 {
 
+/*
 template<class Type>
 Type det(const Matrix&)
 {}
@@ -11,6 +12,7 @@ Type det(const Matrix&)
 template<class Type>
 Type dot_Product(Matrix first, Matrix second)
 {}
+*/
 
 enum operate{Add, Minus, Mutiply, Divide};
 
@@ -40,7 +42,7 @@ public:
 		
 	}
 
-	Matrix(const Matrix& matrix) : rowCount[matrix.rowCount] , colCount{matrix.colCount}
+	Matrix(const Matrix& matrix) : rowCount{matrix.rowCount} , colCount{matrix.colCount}
 	{
 	
 		mainData = new Type*[rowCount];
@@ -152,9 +154,9 @@ public:
 		}
 	}
 
-	int whereFirst(int count);
+	int  whereFirst(int count);
 
-	void changeLine(int colNum);
+	void changeLine(int first, int second);
 
 	void solution();
 
@@ -167,7 +169,7 @@ public:
 	int colCount ,rowCount;
 
 private:
-	Type** mainData
+	Type** mainData;
 };
 
 };

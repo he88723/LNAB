@@ -1,5 +1,7 @@
 #include "matrix.h"
 
+using namespace Math;
+
 void merge_recursive(int in[], int reg[], int start, int end)
 {
 
@@ -29,22 +31,23 @@ void merge_recursive(int in[], int reg[], int start, int end)
 void arrange(int in[], int len)
 {
 
-	int reg[];
+	int reg[len];
 	merge_recursive(in, reg, 0, len-1);
 }
 
-/////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////Matrix Class
 
-int Matrix::whereFirst(int count)
+template <class Type>
+int Matrix<Type>::whereFirst(int count)
 {
 	for(int i=0; i<count ;++i)
-		if(mainData[i][count])
+		if(this -> mainData[i][count])
 			return i;	
 	return -1;
 }
 
-//For Matrix Class~
-Matrix Matrix::operator+(const Matrix& added)
+template <class Type>
+Matrix<Type> Matrix<Type>::operator+(const Matrix& added)
 {
 
 	if(is_same_size(added))
@@ -53,31 +56,32 @@ Matrix Matrix::operator+(const Matrix& added)
 	Matrix rt{this->colCount, this->rowCount};
 
 	for(int i=0; i<added.rowCount ;++i)
-		for(int i=0; i<added.colCount ;++i)
+		for(int j=0; j<added.colCount ;++j)
 			rt[i][j] = *this[i][j] + added[i][j];
 
 	return rt;
 }
 
-
-Matrix Matrix::operator-(const Matrix&)
+template <class Type>
+Matrix<Type> Matrix<Type>::operator-(const Matrix& minus)
 {
 
-	if(is_same_size(added))
+	if(is_same_size(minus))
 		return Matrix();
 
 	Matrix rt{this->colCount, this->rowCount};
 
-	for(int i=0; i<added.rowCount ;++i)
-		for(int i=0; i<added.colCount ;++i)
-			rt[i][j] = *this[i][j] - added[i][j];
+	for(int i=0; i<minus.rowCount ;++i)
+		for(int j=0; j<minus.colCount ;++j)
+			rt[i][j] = *this[i][j] - minus[i][j];
 
 	return rt;
 
 }
 
 
-Matrix Matrix::operator*(const Matrix& mutiplied)
+template <class Type>
+Matrix<Type> Matrix<Type>::operator*(const Matrix& mutiplied)
 {
 
 	if(this->rowCount != mutiplied.colCount)
@@ -102,7 +106,8 @@ Matrix Matrix::operator*(const Matrix& mutiplied)
 
 }
 
-Matrix& Matrix::operator=(Matrix& designated)
+template <class Type>
+Matrix<Type>& Matrix<Type>::operator=(Matrix& designated)
 {
 
 	for(int i=0; i<this->rowCount ;++i)
@@ -114,7 +119,8 @@ Matrix& Matrix::operator=(Matrix& designated)
 	return *this;
 }
 
-bool Matrix::operator==(const Matrix& matched)
+template <class Type>
+bool Matrix<Type>::operator==(const Matrix& matched)
 {
 
 	if(this->rowCount != matched.rowCount ||
@@ -124,13 +130,14 @@ bool Matrix::operator==(const Matrix& matched)
 	for(int i=0; i<this->rowCount ;++i)
 	{
 		for(int j=0; j<this->colCount ;++j)
-			if(designated[i][j] != *this[i][j])
+			if(mainData[i][j] != *this[i][j])
 				return false;
 	}
 	return true;
 }
 
-void changeLine(int first, int second)
+template <class Type>
+void Matrix<Type>::changeLine(int first, int second)
 {
 	if(first == second)
 		return;
@@ -147,7 +154,8 @@ void changeLine(int first, int second)
 		mainData[i][second] = buf[i];
 }
 
-void Matrix::descend_arrange()
+template <class Type>
+void Matrix<Type>::descend_arrange()
 {
 
 	int lineRef[colCount];
@@ -161,7 +169,8 @@ void Matrix::descend_arrange()
 		changeLine(i,lineRef[i]);
 }
 
-void Matrix::solution()
+template <class Type>
+void Matrix<Type>::solution()
 {
 
 	while(true)
@@ -175,13 +184,13 @@ void Matrix::solution()
 				return *this;
 			//The status is illogical.			
 
-			inlineOperate(i, 1/mainData[status][i], Matrix::operate::Mutiply);
+			inlineOperate(i, 1/mainData[status][i], Math::operate::Mutiply);
 
-			for(int i=0; i<colCount ;++j)
+			for(int j=0; j<colCount ;++j)
 			{
 				if(!mainData[status][j])
 					continue;
-				lnlOperate(j, i, Matrix::operate::Minus, mainData[status][j]);
+				lnlOperate(j, i, Math::operate::Minus, mainData[status][j]);
 			}
 
 		}
