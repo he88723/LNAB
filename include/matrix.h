@@ -1,6 +1,8 @@
 #ifndef Matrix_H
 #define Matrix_H
 
+#include <initializer_list>
+
 namespace Math
 {
 
@@ -42,7 +44,7 @@ public:
 		
 	}
 
-	Matrix(const Matrix& matrix) : rowCount{matrix.rowCount} , colCount{matrix.colCount}
+	Matrix(const Matrix<Type>& matrix) : rowCount{matrix.rowCount} , colCount{matrix.colCount}
 	{
 	
 		mainData = new Type*[rowCount];
@@ -59,6 +61,21 @@ public:
 	
 	}
 
+	Matrix(std::initializer_list<std::initializer_list<Type>> initList)
+	   	: rowCount{(Type)initList.size()} , colCount{(Type)(*initList.begin() ).size()}
+	{
+		mainData = new Type*[rowCount];
+
+		for(int i=0; i<rowCount ;++i)
+		{
+			mainData[i] = new Type[colCount];
+
+			for(int j=0; j<colCount ;++j)
+				mainData[i][j] = *(((initList.begin()+i)->begin()) + j);
+		}
+	
+	}
+
 	~Matrix()
 	{
 	
@@ -68,7 +85,7 @@ public:
 		delete mainData;
 	}
 
-	bool is_same_size(const Matrix& matched)
+	bool is_same_size(const Matrix<Type>& matched)
 	{
 
 		if(this->colCount != matched.colCount)
@@ -83,17 +100,17 @@ public:
 	int* operator[](int row)
 	{return mainData[row];}
 
-	Matrix  operator+(const Matrix&);
-	Matrix  operator-(const Matrix&);	
-	Matrix  operator*(const Matrix&);
-	Matrix  operator/(const Matrix& devided)
+	Matrix<Type>  operator+(const Matrix<Type>&);
+	Matrix<Type>  operator-(const Matrix<Type>&);
+	Matrix<Type>  operator*(const Matrix<Type>&);
+	Matrix<Type>  operator/(const Matrix<Type>& devided)
 	{return (*this)*reciprocal(devided);}
 	//A/B = A*(1/B)
 	
-	Matrix& operator=(Matrix&);
+	Matrix<Type>& operator=(const Matrix<Type>&);
 
-	bool  	operator==(const Matrix&);
-	bool	operator!=(const Matrix& matched)
+	bool  	operator==(const Matrix<Type>&);
+	bool	operator!=(const Matrix<Type>& matched)
 	{return !(*this == matched);}
 
 	void inlineOperate(int lineCount, Type value, operate op)
