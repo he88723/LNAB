@@ -55,7 +55,7 @@ public:
 			mainData[i] = new Type[colCount];
 
 			for(int j=0; j<colCount ;++j)
-				mainData[i][j] = matrix[i][j];
+				mainData[i][j] = matrix.mainData[i][j];
 		
 		}
 	
@@ -97,21 +97,82 @@ public:
 
 	}
 
-	int* operator[](int row)
-	{return mainData[row];}
+//Operator For Matrix======================================================
 
-	Matrix  operator+(const Matrix&);
-	Matrix  operator-(const Matrix&);
-	Matrix  operator*(const Matrix&);
-	Matrix  operator/(const Matrix& devided)
-	{return (*this)*reciprocal(devided);}
+	int* operator[](int row)
+	{return this->mainData[row];}
+
+	Matrix<Type> operator+(const Matrix<Type>& added)
+	{
+		if(is_same_size(added))
+			return Matrix();
+
+		Matrix rt{this->colCount, this->rowCount};
+
+		for(int i=0; i<added.rowCount ;++i)
+			for(int j=0; j<added.colCount ;++j)
+				rt.mainData[i][j] = this->mainData[i][j] + added.mainData[i][j];
+		return rt;
+	}
+
+	Matrix<Type>  operator-(const Matrix<Type>& minus)
+	{
+		if(is_same_size(minus))
+			return Matrix();
+
+		Matrix rt{this->colCount, this->rowCount};
+
+		for(int i=0; i<minus.rowCount ;++i)
+			for(int j=0; j<minus.colCount ;++j)
+				rt.mainData[i][j] = this->mainData[i][j] - minus.mainData[i][j];
+		return rt;
+	}
+
+	Matrix<Type>  operator*(const Matrix<Type>& mutiplied)
+	{
+		if(this->rowCount != mutiplied.colCount)
+			return Matrix();
+	
+		Matrix rt{this->colCount, mutiplied.rowCount};
+
+		int count{0};
+
+		for(int count; count<this->colCount;)
+			for(int i=0; i<mutiplied.colCount ;++i)
+				for(int j=0; j<this->rowCount ;++j)
+					rt.mainData[count][i] += this->mainData[j][count] * mutiplied.mainData[i][j];
+		return rt;
+	}
+
+//	Matrix<Type>  operator/(const Matrix<Type>& devided)
+//	{return (*this)*reciprocal(devided);}
 	//A/B = A*(1/B)
 	
-	Matrix& operator=(const Matrix&);
+	Matrix<Type>& operator=(const Matrix<Type>& designated)
+	{
+		for(int i=0; i<this->rowCount ;++i)
+			for(int j=0; j<this->colCount ;++j)
+				designated.mainData[i][j] = *this[i][j];
+		return *this;
+	}
 
-	bool  	operator==(const Matrix&);
-	bool	operator!=(const Matrix& matched)
+	bool  	operator==(const Matrix<Type>& matched)
+	{
+		if(this->rowCount != matched.rowCount ||
+		   this->colCount != matched.colCount)
+			return false;
+	
+		for(int i=0; i<this->rowCount ;++i)
+			for(int j=0; j<this->colCount ;++j)
+				if(this->mainData[i][j] != matched.mainData[i][j])
+					return false;
+		return true;
+	}
+
+	bool	operator!=(const Matrix<Type>& matched)
 	{return !(*this == matched);}
+
+//==================================================================
 
 	void inlineOperate(int lineCount, Type value, operate op)
 	{
@@ -171,21 +232,70 @@ public:
 		}
 	}
 
-	int  whereFirst(int count);
+	int  whereFirst(int count)
+	{
+		for(int i=0; i<count ;++i)
+			if(this -> mainData[i][count])
+				return i;	
+		return -1;
+	}
 
-	void changeLine(int first, int second);
+	void changeLine(int first, int second)
+	{
+		if(first == second)
+			return;
 
-	void solution();
+		auto buf = this->mainData[0];
 
-//	void reciprocal();
+		for(int i=0; i<rowCount ;++i)
+			buf[i] = mainData[i][first];
 
-	void descend_arrange();
+		for(int i=0; i<rowCount ;++i)
+			mainData[i][first] = mainData[i][second];
+
+		for(int i=0; i<rowCount ;++i)
+			mainData[i][second] = buf[i];
+	}
+
+	void descend_arrange()
+	{
+		int lineRef[colCount];
+
+		for(int i=0; i<colCount ;++i)
+			lineRef[i] = whereFirst(i);
+
+		arrange(lineRef, colCount);
+
+		for(int i=0; i<colCount ;++i)
+			changeLine(i,lineRef[i]);
+	}
+
+	void solution()
+	{
+		for(int i=0; i<colCount ;++i)
+		{
+			int status{whereFirst(i)};
+
+			if(status == -1 || status == rowCount-1)
+				return *this;
+			//The status is illogical.			
+
+			inlineOperate(i, 1/mainData[status][i], Math::operate::Mutiply);
+
+			for(int j=0; j<colCount ;++j)
+			{
+				if(!mainData[status][j])
+					continue;
+				lnlOperate(j, i, Math::operate::Minus, mainData[status][j]);
+			}
+		}
+
+		descend_arrange();
+	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 	int colCount ,rowCount;
-
-private:
 	Type** mainData;
 };
 
