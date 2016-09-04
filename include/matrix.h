@@ -2,6 +2,9 @@
 #define Matrix_H
 
 #include <initializer_list>
+#include <iostream>
+
+using namespace std;
 
 namespace Math
 {
@@ -99,13 +102,13 @@ public:
 
 //Operator For Matrix======================================================
 
-	int* operator[](int row)
+	int* operator[](int row) const
 	{return this->mainData[row];}
 
 	Matrix<Type> operator+(const Matrix<Type>& added)
 	{
-		if(is_same_size(added))
-			return Matrix();
+		if(!is_same_size(added))
+			return Matrix<Type>();
 
 		Matrix rt{this->colCount, this->rowCount};
 
@@ -117,8 +120,8 @@ public:
 
 	Matrix<Type>  operator-(const Matrix<Type>& minus)
 	{
-		if(is_same_size(minus))
-			return Matrix();
+		if(!is_same_size(minus))
+			return Matrix<Type>();
 
 		Matrix rt{this->colCount, this->rowCount};
 
@@ -131,13 +134,11 @@ public:
 	Matrix<Type>  operator*(const Matrix<Type>& mutiplied)
 	{
 		if(this->rowCount != mutiplied.colCount)
-			return Matrix();
+			return Matrix<Type>();
 	
 		Matrix rt{this->colCount, mutiplied.rowCount};
 
-		int count{0};
-
-		for(int count; count<this->colCount;)
+		for(int count=0; count<this->colCount;++count)
 			for(int i=0; i<mutiplied.colCount ;++i)
 				for(int j=0; j<this->rowCount ;++j)
 					rt.mainData[count][i] += this->mainData[j][count] * mutiplied.mainData[i][j];
@@ -152,7 +153,7 @@ public:
 	{
 		for(int i=0; i<this->rowCount ;++i)
 			for(int j=0; j<this->colCount ;++j)
-				designated.mainData[i][j] = *this[i][j];
+				this->mainData[i][j] = designated.mainData[i][j];
 		return *this;
 	}
 
