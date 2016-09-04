@@ -100,17 +100,17 @@ public:
 	int* operator[](int row)
 	{return mainData[row];}
 
-	Matrix<Type>  operator+(const Matrix<Type>&);
-	Matrix<Type>  operator-(const Matrix<Type>&);
-	Matrix<Type>  operator*(const Matrix<Type>&);
-	Matrix<Type>  operator/(const Matrix<Type>& devided)
+	Matrix  operator+(const Matrix&);
+	Matrix  operator-(const Matrix&);
+	Matrix  operator*(const Matrix&);
+	Matrix  operator/(const Matrix& devided)
 	{return (*this)*reciprocal(devided);}
 	//A/B = A*(1/B)
 	
-	Matrix<Type>& operator=(const Matrix<Type>&);
+	Matrix& operator=(const Matrix&);
 
-	bool  	operator==(const Matrix<Type>&);
-	bool	operator!=(const Matrix<Type>& matched)
+	bool  	operator==(const Matrix&);
+	bool	operator!=(const Matrix& matched)
 	{return !(*this == matched);}
 
 	void inlineOperate(int lineCount, Type value, operate op)

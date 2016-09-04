@@ -47,7 +47,7 @@ int Matrix<Type>::whereFirst(int count)
 }
 
 template <class Type>
-Matrix<int> Matrix<int>::operator+(const Matrix<int>& added)
+Matrix<Type> Math::Matrix<Type>::operator+(const Matrix<Type>& added)
 {
 
 	if(is_same_size(added))
@@ -107,7 +107,7 @@ Matrix<Type> Matrix<Type>::operator*(const Matrix<Type>& mutiplied)
 }
 
 template <class Type>
-Matrix<int>& Matrix<int>::operator=(const Matrix<int>& designated)
+Matrix<Type>& Math::Matrix<Type>::operator=(const Matrix<Type>& designated)
 {
 
 	for(int i=0; i<this->rowCount ;++i)
