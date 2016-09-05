@@ -6,6 +6,9 @@
 
 using namespace std;
 
+void merge_recursive(int in[], int reg[], int start, int end);
+void arrange(int in[], int len);
+
 namespace Math
 {
 
@@ -31,34 +34,34 @@ public:
 	{
 		if(col && row)
 		{
-			mainData = new Type*[rowCount];
+			this->mainData = new Type*[rowCount];
 
 			for(int i=0; i<rowCount ;++i)
 			{
-				mainData[i] = new Type[colCount];
+				this->mainData[i] = new Type[colCount];
 		
 				for(int j=0; j<colCount ;++j)
-					mainData[i][j] = 0;
+					this->mainData[i][j] = 0;
 
 			}
 		}
 		else
-			mainData = nullptr;
+			this->mainData = nullptr;
 		
 	}
 
 	Matrix(const Matrix<Type>& matrix) : rowCount{matrix.rowCount} , colCount{matrix.colCount}
 	{
 	
-		mainData = new Type*[rowCount];
+		this->mainData = new Type*[rowCount];
 
 		for(int i=0; i<rowCount ;++i)
 		{
 		
-			mainData[i] = new Type[colCount];
+			this->mainData[i] = new Type[colCount];
 
 			for(int j=0; j<colCount ;++j)
-				mainData[i][j] = matrix.mainData[i][j];
+				this->mainData[i][j] = matrix[i][j];
 		
 		}
 	
@@ -67,14 +70,14 @@ public:
 	Matrix(std::initializer_list<std::initializer_list<Type>> initList)
 	   	: rowCount{(Type)initList.size()} , colCount{(Type)(*initList.begin() ).size()}
 	{
-		mainData = new Type*[rowCount];
+		this->mainData = new Type*[rowCount];
 
 		for(int i=0; i<rowCount ;++i)
 		{
-			mainData[i] = new Type[colCount];
+			this->mainData[i] = new Type[colCount];
 
 			for(int j=0; j<colCount ;++j)
-				mainData[i][j] = *(((initList.begin()+i)->begin()) + j);
+				this->mainData[i][j] = *(((initList.begin()+i)->begin()) + j);
 		}
 	
 	}
@@ -83,12 +86,20 @@ public:
 	{
 	
 		for	(int i=0; i<rowCount ;++i)
-			delete mainData[i];
+			delete this->mainData[i];
 		
-		delete mainData;
+		delete this->mainData;
 	}
 
-	bool is_same_size(const Matrix<Type>& matched)
+	inline bool set(int row, int col, Type val)
+	{
+		if(!(0 <= row < rowCount || 0 <= col < colCount))
+			return false;
+		this->mainData[row][col] = val;
+		return true;
+	}
+
+	inline bool is_same_size(const Matrix<Type>& matched)
 	{
 
 		if(this->colCount != matched.colCount)
@@ -102,8 +113,12 @@ public:
 
 //Operator For Matrix======================================================
 
-	int* operator[](int row) const
-	{return this->mainData[row];}
+	Type* operator[](int row) const
+	{
+		if(row >= rowCount)
+			return nullptr;
+		return this->mainData[row];
+	}
 
 	Matrix<Type> operator+(const Matrix<Type>& added)
 	{
@@ -114,7 +129,7 @@ public:
 
 		for(int i=0; i<added.rowCount ;++i)
 			for(int j=0; j<added.colCount ;++j)
-				rt.mainData[i][j] = this->mainData[i][j] + added.mainData[i][j];
+				rt.set(i, j, this->mainData[i][j] + added[i][j]);
 		return rt;
 	}
 
@@ -127,7 +142,7 @@ public:
 
 		for(int i=0; i<minus.rowCount ;++i)
 			for(int j=0; j<minus.colCount ;++j)
-				rt.mainData[i][j] = this->mainData[i][j] - minus.mainData[i][j];
+				rt.set(i, j, this->mainData[i][j] - minus[i][j]);
 		return rt;
 	}
 
@@ -141,7 +156,7 @@ public:
 		for(int count=0; count<this->colCount;++count)
 			for(int i=0; i<mutiplied.colCount ;++i)
 				for(int j=0; j<this->rowCount ;++j)
-					rt.mainData[count][i] += this->mainData[j][count] * mutiplied.mainData[i][j];
+					rt.set(count, i,  this->mainData[j][count] * mutiplied[i][j]);
 		return rt;
 	}
 
@@ -153,11 +168,11 @@ public:
 	{
 		for(int i=0; i<this->rowCount ;++i)
 			for(int j=0; j<this->colCount ;++j)
-				this->mainData[i][j] = designated.mainData[i][j];
+				this->mainData[i][j] = designated[i][j];
 		return *this;
 	}
 
-	bool  	operator==(const Matrix<Type>& matched)
+	bool 	  	  operator==(const Matrix<Type>& matched)
 	{
 		if(this->rowCount != matched.rowCount ||
 		   this->colCount != matched.colCount)
@@ -165,12 +180,12 @@ public:
 	
 		for(int i=0; i<this->rowCount ;++i)
 			for(int j=0; j<this->colCount ;++j)
-				if(this->mainData[i][j] != matched.mainData[i][j])
+				if(this->mainData[i][j] != matched[i][j])
 					return false;
 		return true;
 	}
 
-	bool	operator!=(const Matrix<Type>& matched)
+	bool		  operator!=(const Matrix<Type>& matched)
 	{return !(*this == matched);}
 
 //==================================================================
@@ -181,51 +196,52 @@ public:
 		{
 			case operate::Add:
 				for(int i=0; i<rowCount ;++i)
-					mainData[i][lineCount] += value;
+					this->mainData[i][lineCount] += value;
 				break;
 
 			case operate::Minus:
 				for(int i=0; i<rowCount ;++i)
-					mainData[i][lineCount] -= value;
+					this->mainData[i][lineCount] -= value;
 				break;
 
 			case operate::Mutiply:
 				for(int i=0; i<rowCount ;++i)
-					mainData[i][lineCount] *= value;
+					this->mainData[i][lineCount] *= value;
 				break;
 
 			case operate::Divide:
 				for(int i=0; i<rowCount ;++i)
-					mainData[i][lineCount] /= value;
+					this->mainData[i][lineCount] /= value;
 				break;
 		
 			default:
 				return;
 		}
 	}
-
+	
+	//Here
 	void lnlOperate(int firstLine, int secondLine, operate op, Type rate = 1)
 	{
 		switch(op)
 		{
 			case operate::Add:
 				for(int i=0; i<rowCount ;++i)
-					mainData[i][firstLine] += mainData[i][secondLine]*rate;
+					this->mainData[i][firstLine] += this->mainData[i][secondLine]*rate;
 				break;
 
 			case operate::Minus:
 				for(int i=0; i<rowCount ;++i)
-					mainData[i][firstLine] -= mainData[i][secondLine]*rate;
+					this->mainData[i][firstLine] += (this->mainData[i][secondLine]*rate*-1);
 				break;
 
 			case operate::Mutiply:
 				for(int i=0; i<rowCount ;++i)
-					mainData[i][firstLine] *= mainData[i][secondLine]*rate;
+					this->mainData[i][firstLine] *= this->mainData[i][secondLine]*rate;
 				break;
 
 			case operate::Divide:
 				for(int i=0; i<rowCount ;++i)
-					mainData[i][firstLine] += mainData[i][secondLine]*rate;
+					this->mainData[i][firstLine] /= this->mainData[i][secondLine]*rate;
 				break;
 
 			default:
@@ -233,10 +249,17 @@ public:
 		}
 	}
 
-	int  whereFirst(int count)
+	void pp()
 	{
-		for(int i=0; i<count ;++i)
-			if(this -> mainData[i][count])
+		for(int i=0;i<rowCount;++i)
+			for(int j=0;j<colCount;++j)
+				cout << i << ',' << j << mainData[j][i] << endl;
+	}
+
+	inline int whereFirst(int count)
+	{
+		for(int i=0; i<=count ;++i)
+			if(this->mainData[i][count] != 0)
 				return i;	
 		return -1;
 	}
@@ -249,13 +272,13 @@ public:
 		auto buf = this->mainData[0];
 
 		for(int i=0; i<rowCount ;++i)
-			buf[i] = mainData[i][first];
+			buf[i] = this->mainData[i][first];
 
 		for(int i=0; i<rowCount ;++i)
-			mainData[i][first] = mainData[i][second];
+			this->mainData[i][first] = this->mainData[i][second];
 
 		for(int i=0; i<rowCount ;++i)
-			mainData[i][second] = buf[i];
+			this->mainData[i][second] = buf[i];
 	}
 
 	void descend_arrange()
@@ -277,17 +300,17 @@ public:
 		{
 			int status{whereFirst(i)};
 
-			if(status == -1 || status == rowCount-1)
-				return *this;
+			if(status == -1 || status >= rowCount)
+				return;
 			//The status is illogical.			
 
-			inlineOperate(i, 1/mainData[status][i], Math::operate::Mutiply);
-
+			inlineOperate(i, 1/this->mainData[status][i], Math::operate::Mutiply);
+			//Care the type of int
 			for(int j=0; j<colCount ;++j)
 			{
-				if(!mainData[status][j])
+				if(!this->mainData[status][j] || i==j)
 					continue;
-				lnlOperate(j, i, Math::operate::Minus, mainData[status][j]);
+				lnlOperate(j, i, Math::operate::Minus, this->mainData[status][j]);
 			}
 		}
 
@@ -297,9 +320,49 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 	int colCount ,rowCount;
+
+private:
 	Type** mainData;
 };
 
 };
 
-#endif
+void merge_recursive(int in[], int reg[], int start, int end)
+{
+
+	cout << "start: "<<start << " end: " << end <<endl;
+
+	if(start>=end)
+		return;
+
+	int start1{start};
+	int start2{((end-start)>>1)+start};
+	int end1{((end-start)>>1)+start+1};
+	int end2{end};
+
+	if(!(start1 == start2 || end1 == end2))
+	{
+		merge_recursive(in, reg, start1, end1);
+		merge_recursive(in, reg, start2, end2);
+	}
+
+	int k{start};
+	while(start1 <= end1 && start2 <= end2)
+		reg[k++] = in[start1] < in[start2]?in[start1++]:in[start2++];
+	while(start1 <= end1)
+		reg[k++] = in[start1++];
+	while(start2 <= end2)
+		reg[k++] = in[start2++];
+
+	for(k=start; k<end ; ++k)
+		in[k] = reg[k];
+}
+
+void arrange(int in[], int len)
+{
+
+	int reg[len];
+	merge_recursive(in, reg, 0, len-1);
+}
+
+#	endif

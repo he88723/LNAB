@@ -7,13 +7,14 @@ using namespace Math;
 int main(void)
 {
 
-	Matrix<int> trye{{2,5},{7,9}};
+	Matrix<double> trye{{2,5},{7,9}};
+	
+	trye.solution();
 
-	Matrix<int> tttt{{1,1},{1,1}};
 
-	trye = trye + tttt;
-
-	cout << trye[0][0]<<endl;
+	for(int i=0;i<trye.rowCount;++i)
+		for(int j=0;j<trye.colCount;++j)
+			cout << trye[i][j];	
 
 	return 0;
 }
