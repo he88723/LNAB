@@ -162,7 +162,7 @@ public:
 
 //	Matrix<Type>  operator/(const Matrix<Type>& devided)
 //	{return (*this)*reciprocal(devided);}
-	//A/B = A*(1/B)
+//	A/B = A*(1/B)
 	
 	Matrix<Type>& operator=(const Matrix<Type>& designated)
 	{
@@ -249,13 +249,6 @@ public:
 		}
 	}
 
-	void pp()
-	{
-		for(int i=0;i<rowCount;++i)
-			for(int j=0;j<colCount;++j)
-				cout << i << ',' << j << mainData[j][i] << endl;
-	}
-
 	inline int whereFirst(int count)
 	{
 		for(int i=0; i<=count ;++i)
@@ -321,7 +314,7 @@ public:
 
 	int colCount ,rowCount;
 
-private:
+protected:
 	Type** mainData;
 };
 
@@ -365,4 +358,4 @@ void arrange(int in[], int len)
 	merge_recursive(in, reg, 0, len-1);
 }
 
-#	endif
+#endif
