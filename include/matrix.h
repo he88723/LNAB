@@ -2,9 +2,6 @@
 #define Matrix_H
 
 #include <initializer_list>
-#include <iostream>
-
-using namespace std;
 
 void merge_recursive(int in[], int reg[], int start, int end);
 void arrange(int in[], int len);
@@ -68,7 +65,7 @@ public:
 	}
 
 	Matrix(std::initializer_list<std::initializer_list<Type>> initList)
-	   	: rowCount{(Type)initList.size()} , colCount{(Type)(*initList.begin() ).size()}
+	   	: rowCount{(int)initList.size()} , colCount{(int)(*initList.begin() ).size()}
 	{
 		this->mainData = new Type*[rowCount];
 
