@@ -27,22 +27,22 @@ public:
 		{
 			case operate::Add:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[i][lineCount] += value;
+					this->mainData[lineCount][i] += value;
 				break;
 
 			case operate::Minus:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[i][lineCount] -= value;
+					this->mainData[lineCount][i] -= value;
 				break;
 
 			case operate::Mutiply:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[i][lineCount] *= value;
+					this->mainData[lineCount][i] *= value;
 				break;
 
 			case operate::Divide:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[i][lineCount] /= value;
+					this->mainData[lineCount][i] /= value;
 				break;
 		
 			default:
@@ -56,22 +56,22 @@ public:
 		{
 			case operate::Add:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[i][firstLine] += this->mainData[i][secondLine]*rate;
+					this->mainData[firstLine][i] += this->mainData[secondLine][i]*rate;
 				break;
 
 			case operate::Minus:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[i][firstLine] += (this->mainData[i][secondLine]*rate*-1);
+					this->mainData[firstLine][i] += (this->mainData[secondLine][i]*rate*-1);
 				break;
 
 			case operate::Mutiply:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[i][firstLine] *= this->mainData[i][secondLine]*rate;
+					this->mainData[firstLine][i] *= this->mainData[secondLine][i]*rate;
 				break;
 
 			case operate::Divide:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[i][firstLine] /= this->mainData[i][secondLine]*rate;
+					this->mainData[firstLine][i] /= this->mainData[secondLine][i]*rate;
 				break;
 
 			default:
@@ -82,8 +82,8 @@ public:
 
 	inline int whereFirst(int count)
 	{
-		for(int i=0; i<=count ;++i)
-			if(this->mainData[i][count] != 0)
+		for(int i=0; i<=colCount ;++i)
+			if(this->mainData[count][i] != 0)
 				return i;	
 		return -1;
 	}
@@ -95,19 +95,19 @@ public:
 
 		auto buf = this->mainData[0];
 
-		for(int i=0; i<Matrix<Type>::rowCount ;++i)
-			buf[i] = this->mainData[i][first];
+		for(int i=0; i<Matrix<Type>::colCount ;++i)
+			buf[i] = this->mainData[first][i];
 
-		for(int i=0; i<Matrix<Type>::rowCount ;++i)
-			this->mainData[i][first] = this->mainData[i][second];
+		for(int i=0; i<Matrix<Type>::colCount ;++i)
+			this->mainData[first][i] = this->mainData[second][i];
 
-		for(int i=0; i<Matrix<Type>::rowCount ;++i)
-			this->mainData[i][second] = buf[i];
+		for(int i=0; i<Matrix<Type>::colCount ;++i)
+			this->mainData[second][i] = buf[i];
 	}
 
 	void descend_arrange()
 	{
-		int lineRef[Matrix<Type>::colCount];
+		int lineRef[Matrix<Type>::rowCount];
 
 		for(int i=0; i<Matrix<Type>::colCount ;++i)
 			lineRef[i] = whereFirst(i);

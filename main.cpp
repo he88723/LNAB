@@ -1,4 +1,4 @@
-#include "matrixOP.h"
+#include "matrix.h"
 #include <iostream>
 
 using namespace std;
@@ -7,13 +7,10 @@ using namespace Math;
 int main(void)
 {
 
-	MatrixOP<double> trye{{2,5},{7,9}};
-	
-	trye.solution();
+	Matrix<double> trye{{1,2,3},{2,0,-1}};
+	Matrix<double> tt{{1,4},{2,3},{3,2}};
 
+	Matrix<double> a{trye*tt};
 
-	for(int i=0;i<trye.rowCount;++i)
-		for(int j=0;j<trye.colCount;++j)
-			cout << trye[i][j];	
 return 0;
 }

@@ -3,6 +3,19 @@
 
 #include <initializer_list>
 
+/* 
+ *
+ * --------->colCount
+ *| [ 1 2 3 ]
+ *| [ 4 5 6 ]
+ *| [ 7 8 9 ]
+ *v [ 3 7 9 ]
+ *rowCount
+ *
+ * Can init Matrix{{1,2,3},{4,5,6}......}
+ *
+ */
+
 void merge_recursive(int in[], int reg[], int start, int end);
 void arrange(int in[], int len);
 
@@ -67,6 +80,7 @@ public:
 	Matrix(std::initializer_list<std::initializer_list<Type>> initList)
 	   	: rowCount{(int)initList.size()} , colCount{(int)(*initList.begin() ).size()}
 	{
+
 		this->mainData = new Type*[rowCount];
 
 		for(int i=0; i<rowCount ;++i)
@@ -76,7 +90,6 @@ public:
 			for(int j=0; j<colCount ;++j)
 				this->mainData[i][j] = *(((initList.begin()+i)->begin()) + j);
 		}
-	
 	}
 
 	~Matrix()
@@ -148,12 +161,12 @@ public:
 		if(this->rowCount != mutiplied.colCount)
 			return Matrix<Type>();
 	
-		Matrix rt{this->colCount, mutiplied.rowCount};
+		Matrix rt{this->rowCount, mutiplied.colCount};
 
-		for(int count=0; count<this->colCount;++count)
-			for(int i=0; i<mutiplied.colCount ;++i)
-				for(int j=0; j<this->rowCount ;++j)
-					rt.set(count, i,  this->mainData[j][count] * mutiplied[i][j]);
+		for(int i=0; i<this->rowCount;++i)
+			for(int j=0; j<mutiplied.colCount ;++j)
+				for(int k=0; k<this->colCount ;++k)
+					rt.set(i, j, rt[i][j] + (this->mainData[i][k] * mutiplied[k][j]) );
 		return rt;
 	}
 
