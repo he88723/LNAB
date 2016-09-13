@@ -1,4 +1,4 @@
-#include "matrix.h"
+#include "matrixOP.h"
 #include <iostream>
 
 using namespace std;
@@ -6,11 +6,16 @@ using namespace Math;
 
 int main(void)
 {
+	
+	MatrixOP<double> trye{{1,8},{13,7}};
 
-	Matrix<double> trye{{1,2,3},{2,0,-1}};
-	Matrix<double> tt{{1,4},{2,3},{3,2}};
+	MatrixOP<double> test{trye};
 
-	Matrix<double> a{trye*tt};
+	trye = trye.inverse();
+
+	test = trye * test;
+
+	cout << test << endl;
 
 return 0;
 }

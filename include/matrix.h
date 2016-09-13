@@ -123,14 +123,14 @@ public:
 
 //Operator For Matrix======================================================
 
-	Type* operator[](int row) const
+	inline Type* operator[](int row) const
 	{
 		if(row >= rowCount)
 			return nullptr;
 		return this->mainData[row];
 	}
 
-	Matrix<Type> operator+(const Matrix<Type>& added)
+	inline Matrix<Type> operator+(const Matrix<Type>& added)
 	{
 		if(!is_same_size(added))
 			return Matrix<Type>();
@@ -143,7 +143,7 @@ public:
 		return rt;
 	}
 
-	Matrix<Type>  operator-(const Matrix<Type>& minus)
+	inline Matrix<Type>  operator-(const Matrix<Type>& minus)
 	{
 		if(!is_same_size(minus))
 			return Matrix<Type>();
@@ -156,7 +156,7 @@ public:
 		return rt;
 	}
 
-	Matrix<Type>  operator*(const Matrix<Type>& mutiplied)
+	inline Matrix<Type>  operator*(const Matrix<Type>& mutiplied)
 	{
 		if(this->rowCount != mutiplied.colCount)
 			return Matrix<Type>();
@@ -174,7 +174,7 @@ public:
 //	{return (*this)*reciprocal(devided);}
 //	A/B = A*(1/B)
 	
-	Matrix<Type>& operator=(const Matrix<Type>& designated)
+	inline Matrix<Type>& operator=(const Matrix<Type>& designated)
 	{
 		for(int i=0; i<this->rowCount ;++i)
 			for(int j=0; j<this->colCount ;++j)
@@ -182,7 +182,7 @@ public:
 		return *this;
 	}
 
-	bool 	  	  operator==(const Matrix<Type>& matched)
+	inline bool operator==(const Matrix<Type>& matched)
 	{
 		if(this->rowCount != matched.rowCount ||
 		   this->colCount != matched.colCount)
@@ -195,7 +195,7 @@ public:
 		return true;
 	}
 
-	bool		  operator!=(const Matrix<Type>& matched)
+	inline bool operator!=(const Matrix<Type>& matched)
 	{return !(*this == matched);}
 
 //==================================================================
