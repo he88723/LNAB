@@ -256,7 +256,7 @@ public:
 			for(int j=0; j<Matrix<Type>::rowCount ;++j)
 			{
 
-				if(rt[j][status] == 0 || i==j)
+				if(solutionOne[j][status] == 0 || i==j)
 					continue;
 				rt.lnlOperate(j, i, Math::operate::Minus, solutionOne[j][status]);
 				solutionOne.lnlOperate(j, i, Math::operate::Minus, solutionOne[j][status]);
