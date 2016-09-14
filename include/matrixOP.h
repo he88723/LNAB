@@ -47,10 +47,10 @@ public:
 
 
 	inline MatrixOP<Type> operator+(const MatrixOP<Type>& added)
-	{return Matrix<Type>::operator+(added);}
+	{return MatrixOP{Matrix<Type>::operator+(added)};}
 
 	inline MatrixOP<Type> operator-(const MatrixOP<Type>& minus)
-	{return Matrix<Type>::operator-(minus);}
+	{return MatrixOP{Matrix<Type>::operator-(minus)};}
 
 	inline MatrixOP<Type> operator*(const MatrixOP<Type>& mutiplied)
 	{return MatrixOP{Matrix<Type>::operator*(mutiplied)};}

@@ -135,7 +135,7 @@ public:
 		if(!is_same_size(added))
 			return Matrix<Type>();
 
-		Matrix rt{this->colCount, this->rowCount};
+		Matrix<Type> rt{this->colCount, this->rowCount};
 
 		for(int i=0; i<added.rowCount ;++i)
 			for(int j=0; j<added.colCount ;++j)
@@ -148,7 +148,7 @@ public:
 		if(!is_same_size(minus))
 			return Matrix<Type>();
 
-		Matrix rt{this->colCount, this->rowCount};
+		Matrix<Type> rt{this->colCount, this->rowCount};
 
 		for(int i=0; i<minus.rowCount ;++i)
 			for(int j=0; j<minus.colCount ;++j)
@@ -161,7 +161,7 @@ public:
 		if(this->rowCount != mutiplied.colCount)
 			return Matrix<Type>();
 	
-		Matrix rt{this->rowCount, mutiplied.colCount};
+		Matrix<Type> rt{this->rowCount, mutiplied.colCount};
 
 		for(int i=0; i<this->rowCount;++i)
 			for(int j=0; j<mutiplied.colCount ;++j)
