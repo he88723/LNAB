@@ -1,6 +1,7 @@
 #ifndef Matrix_H
 #define Matrix_H
 
+#include "vectors.h"
 #include <initializer_list>
 
 /* 
@@ -40,7 +41,7 @@ class Matrix
 
 public:
 
-	Matrix(int col = 0, int row = 0) : rowCount{row} , colCount{col}
+	Matrix(int row = 0, int col = 0) : rowCount{row} , colCount{col}
 	{
 		if(col && row)
 		{
@@ -57,7 +58,20 @@ public:
 		}
 		else
 			this->mainData = nullptr;
-		
+	}
+
+	Matrix(Type** copied, int row, int col) : rowCount{row} , colCount{col}
+	{
+
+		this->mainData = new Type*[rowCount];
+
+		for(int i=0; i<rowCount ;++i)
+		{
+			this->mainData[i] = new Type[colCount];
+
+			for(int j=0; j<colCount ;++j)
+				this->mainData[i][j] = copied[i][j];
+		}
 	}
 
 	Matrix(const Matrix<Type>& matrix) : rowCount{matrix.rowCount} , colCount{matrix.colCount}
@@ -90,6 +104,36 @@ public:
 			for(int j=0; j<colCount ;++j)
 				this->mainData[i][j] = *(((initList.begin()+i)->begin()) + j);
 		}
+	}
+
+	Matrix(std::initializer_list<Vectors<Type>> initList)
+		: rowCount{(int)initList.size()} , colCount{(int)(*initList.begin() ).size}
+	{
+	
+		this->mainData = new Type*[rowCount];
+
+		for(int i=0; i<rowCount ;++i)
+		{
+			this->mainData[i] = new Type[colCount];
+
+			for(int j=0; j<colCount ;++j)
+				this->mainData[i][j] = *(initList.begin()+i)[j];
+		}
+	}
+
+	Matrix(Vectors<Type>* copied, int row, int col) : rowCount{row} , colCount{col}
+	{
+
+		this->mainData = new Type*[rowCount]
+
+		for(int i=0; i<rowCount ;++i)
+		{
+			this->mainData[i] = new Type[colCount];
+
+			for(int j=0; j<colCount ;++j)
+				this->mainData[i][j] = copied[i][j];
+		}
+
 	}
 
 	~Matrix()

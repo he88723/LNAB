@@ -44,8 +44,8 @@ public:
 
 //===================================================================
 
-void set(int count, Type val)
-{this->mainData[count] = val;}	
+	void set(int count, Type val)
+	{this->mainData[count] = val;}	
 
 //Operator ----------------------------------------------------
 	Vectors<Type> operator+(const Vectors<Type>& added)
@@ -110,7 +110,7 @@ void set(int count, Type val)
 	bool		  operator!=(const Vectors<Type>& compare)
 	{return !(*this==compare);}
 
-//===================================================
+	//===================================================
 
 	int size;
 
