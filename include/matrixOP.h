@@ -7,6 +7,8 @@
 namespace Math
 {
 
+struct Point{int x, int y};
+
 template<class Type>
 class MatrixOP : public Matrix<Type>
 {
@@ -136,12 +138,40 @@ public:
 			}
 	}
 
-	inline int whereFirst(int count)
+	inline bool set(int row, int col, Type val)
+	{return Matrix<Type>::set(row, col, val);}
+
+	inline int whereFirst(int count)  //For solution to determine
 	{
 		for(int i=0; i<=Matrix<Type>::colCount ;++i)
 			if(this->mainData[count][i] != 0)
 				return i;	
 		return -1;
+	}
+
+	MatrixOP<Type> subMatrix(const Point& pointA, const Point& pointB) //need test
+	{
+		MatrixOP<Type> rt{abs(pointA.x-pointB.x), abs(pointA.y-pointB.y)};
+		Point refPoint{(pointA.x>=pointB.x?pointB.x:pointA.x),
+					   (pointA.y>=pointB.y?pointB.y:pointA.y)};
+
+		for(int i=0; i<rt.rowCount ;++i)
+			for(int j=0; j<rt.colCount ;++j)
+				rt.set(i, j, this->mainData[refPoint.x + i][refPoint.y + j];
+
+		return rt;
+	}
+
+	MatrixOP<Type> subMatrixEpoint(const Point Epoint) //need test
+	{
+		MatrixOP<Type> rt{rowCount-1, colCount-1};
+
+		for(int i=0; i<rowCount ;++i)
+			for(int j=0; j<colCount ;++j)
+				if(i !=	Epoint.X || j != Epoint.y)
+					re.set(i, j, this->mainData[i][j]);
+		
+		return rt;
 	}
 
 	void changeLine(int first, int second)
@@ -272,7 +302,27 @@ public:
 
 	}
 
-	Type det();
+	Type det() //need test
+	{
+		if(rowCount != colCount)
+			return 0;
+
+		if(rowCount == 2)
+			return (this->mainData[0][0]*this->mainData[1][1]) -
+				   (this->mainData[0][1]*this->mainData[1][0]);
+
+		Type rt{0};
+
+		Type postive{1};
+
+		for(int i=0; i<rowCount ;++i)
+		{
+			rt += postive * subMatrix(Point{0,i}).det();
+			postive *= -1;
+		}
+
+		return rt;
+	}
 };
 
 };
@@ -280,5 +330,10 @@ public:
 void merge_recursive(int in[], int reg[], int start, int end);
 
 void arrange(int in[], int len);
+
+inline int abs(int in)
+{
+	return in<0?-in:in;
+}
 
 #endif
