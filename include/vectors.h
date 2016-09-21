@@ -18,7 +18,7 @@ public:
 	Vectors(int sizeSet) : size{sizeSet}
 	{
 		if(!sizeSet)
-			this->mainData = new Type[count];
+			this->mainData = new Type[size];
 		else
 			this->mainData = nullptr;
 	}
@@ -39,7 +39,7 @@ public:
 			this->mainData[i] = *(initList+i);
 	}
 
-	!Vectors()
+	~Vectors()
 	{delete[] this->mainData;}
 
 //===================================================================
@@ -63,13 +63,13 @@ public:
 
 	Vectors<Type> operator-(const Vectors<Type>&	minus)
 	{
-		if(this->size != added.size)
+		if(this->size != minus.size)
 			return Vectors<Type>{};
 
 		Vectors<Type> rt{this->size};
 
 		for(int i=0; i<this->size ;++i)
-			rt.set(i,this->mainData[i]-added[i]);
+			rt.set(i,this->mainData[i]-minus[i]);
 
 		return rt;
 	}

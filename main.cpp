@@ -7,13 +7,9 @@ using namespace Math;
 int main(void)
 {
 	
-	MatrixOP<double> trye{{1,1},{2,-1}};
+	MatrixOP<double> trye{{1,2,3},{0,-4,1},{0,3,-1}};
 	
-	MatrixOP<double> test{trye};
+	cout << trye.det();
 
-	test = trye.inverse();
-
-	cout << trye*test << endl;
-
-return 0;
+	return 0;
 }

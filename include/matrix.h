@@ -105,26 +105,11 @@ public:
 				this->mainData[i][j] = *(((initList.begin()+i)->begin()) + j);
 		}
 	}
-
-	Matrix(std::initializer_list<Vectors<Type>> initList)
-		: rowCount{(int)initList.size()} , colCount{(int)(*initList.begin() ).size}
-	{
 	
-		this->mainData = new Type*[rowCount];
-
-		for(int i=0; i<rowCount ;++i)
-		{
-			this->mainData[i] = new Type[colCount];
-
-			for(int j=0; j<colCount ;++j)
-				this->mainData[i][j] = *(initList.begin()+i)[j];
-		}
-	}
-
 	Matrix(Vectors<Type>* copied, int row, int col) : rowCount{row} , colCount{col}
 	{
 
-		this->mainData = new Type*[rowCount]
+		this->mainData = new Type*[rowCount];
 
 		for(int i=0; i<rowCount ;++i)
 		{

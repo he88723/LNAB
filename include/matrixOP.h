@@ -7,7 +7,10 @@
 namespace Math
 {
 
-struct Point{int x, int y};
+struct Point{
+	int x;
+	int y;
+};
 
 template<class Type>
 class MatrixOP : public Matrix<Type>
@@ -151,25 +154,26 @@ public:
 
 	MatrixOP<Type> subMatrix(const Point& pointA, const Point& pointB) //need test
 	{
-		MatrixOP<Type> rt{abs(pointA.x-pointB.x), abs(pointA.y-pointB.y)};
+		MatrixOP<Type> rt{abs(pointA.x-pointB.x)+1, abs(pointA.y-pointB.y)+1};
+
 		Point refPoint{(pointA.x>=pointB.x?pointB.x:pointA.x),
 					   (pointA.y>=pointB.y?pointB.y:pointA.y)};
 
 		for(int i=0; i<rt.rowCount ;++i)
 			for(int j=0; j<rt.colCount ;++j)
-				rt.set(i, j, this->mainData[refPoint.x + i][refPoint.y + j];
+				rt.set(i, j, this->mainData[refPoint.x + i][refPoint.y + j]);
 
 		return rt;
 	}
 
 	MatrixOP<Type> subMatrixEpoint(const Point Epoint) //need test
 	{
-		MatrixOP<Type> rt{rowCount-1, colCount-1};
+		MatrixOP<Type> rt{Matrix<Type>::rowCount-1, Matrix<Type>::colCount-1};
 
-		for(int i=0; i<rowCount ;++i)
-			for(int j=0; j<colCount ;++j)
-				if(i !=	Epoint.X || j != Epoint.y)
-					re.set(i, j, this->mainData[i][j]);
+		for(int i=0; i<Matrix<Type>::rowCount ;++i)
+			for(int j=0; j<Matrix<Type>::colCount ;++j)
+				if(i !=	Epoint.x && j != Epoint.y && i > 0 && j > 0)
+					rt.set(i-1, j-1, this->mainData[i][j]);
 		
 		return rt;
 	}
@@ -304,10 +308,10 @@ public:
 
 	Type det() //need test
 	{
-		if(rowCount != colCount)
+		if(Matrix<Type>::rowCount != Matrix<Type>::colCount)
 			return 0;
 
-		if(rowCount == 2)
+		if(Matrix<Type>::rowCount == 2)
 			return (this->mainData[0][0]*this->mainData[1][1]) -
 				   (this->mainData[0][1]*this->mainData[1][0]);
 
@@ -315,9 +319,9 @@ public:
 
 		Type postive{1};
 
-		for(int i=0; i<rowCount ;++i)
+		for(int i=0; i<Matrix<Type>::rowCount ;++i)
 		{
-			rt += postive * subMatrix(Point{0,i}).det();
+			rt += postive * subMatrixEpoint(Point{0,i}).det();
 			postive *= -1;
 		}
 
