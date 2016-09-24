@@ -10,7 +10,5 @@ int main(void)
 	MatrixOP<double> trye{{1,2,3},{0,-4,1}};
 
 
-	cout << trye << "\n\n\n" << trye.transpose();
-
 	return 0;
 }

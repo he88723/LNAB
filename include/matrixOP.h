@@ -302,8 +302,6 @@ public:
 		solutionOne.descend_arrange(true, rt);
 
 		return rt;
-
-
 	}
 
 	Type det() //need test
