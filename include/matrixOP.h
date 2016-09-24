@@ -327,6 +327,30 @@ public:
 
 		return rt;
 	}
+
+	MatrixOP<Type> transpose()
+	{
+
+		MatrixOP<Type> rt{Matrix<Type>::colCount, Matrix<Type>::rowCount};
+
+		bool status = Matrix<Type>::rowCount > Matrix<Type>::colCount;
+
+		if(status)
+		{
+			for(int i=0; i<Matrix<Type>::colCount ;++i)
+				for(int j=0; j<Matrix<Type>::rowCount ;++j)
+					rt.set(j, i, this->mainData[i][j]);
+		}
+		else
+		{
+			for(int i=0; i<Matrix<Type>::rowCount ;++i)
+				for(int j=0; j<Matrix<Type>::colCount ;++j)
+					rt.set(j, i, this->mainData[i][j]);
+		}
+		
+		return rt;	
+	}
+
 };
 
 };

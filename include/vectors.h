@@ -17,8 +17,13 @@ public:
 
 	Vectors(int sizeSet) : size{sizeSet}
 	{
-		if(!sizeSet)
+		if(sizeSet)
+		{
 			this->mainData = new Type[size];
+
+			for(int i=0; i<size ;++i)
+				this->mainData[i] = 0;
+		}
 		else
 			this->mainData = nullptr;
 	}

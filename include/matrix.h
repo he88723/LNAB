@@ -106,7 +106,7 @@ public:
 		}
 	}
 	
-	Matrix(Vectors<Type>* copied, int row, int col) : rowCount{row} , colCount{col}
+	Matrix(const Vectors<Type>* copied, int row, int col) : rowCount{row} , colCount{col}
 	{
 
 		this->mainData = new Type*[rowCount];
