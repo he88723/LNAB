@@ -3,6 +3,7 @@
 
 #include "matrix.h"
 #include <iostream>
+#include <random>
 
 namespace Math
 {
@@ -41,24 +42,40 @@ public:
 
 			for(int j=0; j<out.colCount;++j)
 			{
-				chr = j == out.colCount-1 ? 0 : ',';
-				os << out[i][j] << " " << chr;
-			} 
+				chr = j == out.colCount-1 ? 0:',';
+				os << out[i][j] << ' ' << chr;
+			}
+
 			os << "]\n";
 		}	
-
 		return os;
 	}
 
 
 	inline MatrixOP<Type> operator+(const MatrixOP<Type>& added)
 	{return MatrixOP{Matrix<Type>::operator+(added)};}
+	inline MatrixOP<Type> operator+(const Type& opVal)
+	{return MatrixOP{Matrix<Type>::operator+(opVal)};}
 
 	inline MatrixOP<Type> operator-(const MatrixOP<Type>& minus)
 	{return MatrixOP{Matrix<Type>::operator-(minus)};}
+	inline MatrixOP<Type> operator-(const Type& opVal)
+	{return MatrixOP{Matrix<Type>::operator-(opVal)};}
 
 	inline MatrixOP<Type> operator*(const MatrixOP<Type>& mutiplied)
 	{return MatrixOP{Matrix<Type>::operator*(mutiplied)};}
+	inline MatrixOP<Type> operator*(const Type& opVal)
+	{return MatrixOP{Matrix<Type>::operator*(opVal)};}
+
+	inline MatrixOP<Type> operator/(const MatrixOP<Type>& divided)
+	{
+		if(divided.rowCount != divided.colCount && this->rowCount != divided.colCount)
+			return MatrixOP<Type>();
+		
+		return *this * divided.inverse();
+	}
+	inline MatrixOP<Type> operator/(const Type& opVal)
+	{return MatrixOP{Matrix<Type>::operator/(opVal)};}
 
 	inline MatrixOP<Type>& operator=(const MatrixOP<Type>& designated)
 	{
@@ -81,6 +98,17 @@ public:
 
 //--
 
+	void rndSet(Type up, Type down)
+	{
+		std::uniform_real_distribution<Type> unif(down, up);
+		std::default_random_engine rnd;
+
+		for(int i=0; i<Matrix<Type>::rowCount ;++i)
+			for(int j=0; j<Matrix<Type>::colCount ;++j)
+				this->mainData[i][j] = unif(rnd);
+	}
+
+	
 // Line operate
 
 	void inlineOperate(int lineCount, Type value, operate op)
@@ -139,6 +167,17 @@ public:
 				default:
 					return;
 			}
+	}
+
+	inline Type sum()
+	{
+		Type rt{0};
+
+		for(int i=0; i<Matrix<Type>::rowCount ;++i)
+			for(int j=0; j<Matrix<Type>::colCount ;++j)
+				rt += this->mainData[i][j];
+
+		return rt;
 	}
 
 	inline bool set(int row, int col, Type val)

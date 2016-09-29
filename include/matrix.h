@@ -172,6 +172,17 @@ public:
 		return rt;
 	}
 
+	inline Matrix<Type> operator+(const Type& opVal)
+	{
+		Matrix<Type> rt{*this};
+
+		for(int i=0; i<rowCount ;++i)
+			for(int j=0; j<colCount ;++j)
+				rt.set(i, j, rt[i][j]+opVal);
+
+		return rt;
+	}
+
 	inline Matrix<Type>  operator-(const Matrix<Type>& minus)
 	{
 		if(!is_same_size(minus))
@@ -183,6 +194,15 @@ public:
 			for(int j=0; j<minus.colCount ;++j)
 				rt.set(i, j, this->mainData[i][j] - minus[i][j]);
 		return rt;
+	}
+
+	inline Matrix<Type>operator-(const Type& opVal)
+	{
+		Matrix<Type> rt{*this};
+
+		for(int i=0; i<rowCount ;++i)
+			for(int j=0; j<colCount ;++j)
+				rt.set(i, j, rt[i][j]-opVal);
 	}
 
 	inline Matrix<Type>  operator*(const Matrix<Type>& mutiplied)
@@ -199,12 +219,45 @@ public:
 		return rt;
 	}
 
+	inline Matrix<Type> operator*(const Type& opVal)
+	{
+		Matrix<Type> rt{*this};
+
+		for(int i=0; i<rowCount ;++i)
+			for(int j=0; j<colCount ;++j)
+				rt.set(i, j, rt[i][j]*opVal);
+
+		return rt;
+	}
+
+	inline Matrix<Type> operator/(const Type& opVal)
+	{
+		Matrix<Type> rt{*this};
+
+		for(int i=0; i<rowCount ;++i)
+			for(int j=0; j<colCount ;++j)
+				rt.set(i, j, rt[i][j]/opVal);
+
+		return rt;
+	}
 //	Matrix<Type>  operator/(const Matrix<Type>& devided)
 //	{return (*this)*reciprocal(devided);}
 //	A/B = A*(1/B)
 	
 	inline Matrix<Type>& operator=(const Matrix<Type>& designated)
 	{
+		if(!is_same_size(designated))
+		{
+			this->rowCount = designated.rowCount;
+			this->colCount = designated.colCount;
+
+			delete this->mainData;
+			this->mainData = new Type*[rowCount];
+
+			for(int i=0; i<rowCount ;++i)
+				this->mainData[i] = new Type[colCount];
+		}
+
 		for(int i=0; i<this->rowCount ;++i)
 			for(int j=0; j<this->colCount ;++j)
 				this->mainData[i][j] = designated[i][j];
