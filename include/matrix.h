@@ -41,6 +41,8 @@ class Matrix
 
 public:
 
+//Matrix constructor
+
 	Matrix(int row = 0, int col = 0) : rowCount{row} , colCount{col}
 	{
 		if(col && row)
@@ -130,6 +132,8 @@ public:
 		delete this->mainData;
 	}
 
+//===================================================================
+
 	inline bool set(int row, int col, Type val)
 	{
 		if(!(0 <= row < rowCount || 0 <= col < colCount))
@@ -150,7 +154,7 @@ public:
 
 	}
 
-//Operator For Matrix======================================================
+//Matrix operator
 
 	inline Type* operator[](int row) const
 	{
@@ -159,19 +163,19 @@ public:
 		return this->mainData[row];
 	}
 
+
 	inline Matrix<Type> operator+(const Matrix<Type>& added)
 	{
 		if(!is_same_size(added))
 			return Matrix<Type>();
 
-		Matrix<Type> rt{this->colCount, this->rowCount};
+		Matrix<Type> rt{this->rowCount, this->colCount};
 
 		for(int i=0; i<added.rowCount ;++i)
 			for(int j=0; j<added.colCount ;++j)
 				rt.set(i, j, this->mainData[i][j] + added[i][j]);
 		return rt;
 	}
-
 	inline Matrix<Type> operator+(const Type& opVal)
 	{
 		Matrix<Type> rt{*this};
@@ -183,19 +187,19 @@ public:
 		return rt;
 	}
 
+
 	inline Matrix<Type>  operator-(const Matrix<Type>& minus)
 	{
 		if(!is_same_size(minus))
 			return Matrix<Type>();
 
-		Matrix<Type> rt{this->colCount, this->rowCount};
+		Matrix<Type> rt{this->rowCount, this->colCount};
 
 		for(int i=0; i<minus.rowCount ;++i)
 			for(int j=0; j<minus.colCount ;++j)
 				rt.set(i, j, this->mainData[i][j] - minus[i][j]);
 		return rt;
 	}
-
 	inline Matrix<Type>operator-(const Type& opVal)
 	{
 		Matrix<Type> rt{*this};
@@ -205,11 +209,9 @@ public:
 				rt.set(i, j, rt[i][j]-opVal);
 	}
 
+
 	inline Matrix<Type>  operator*(const Matrix<Type>& mutiplied)
 	{
-		if(this->rowCount != mutiplied.colCount)
-			return Matrix<Type>();
-	
 		Matrix<Type> rt{this->rowCount, mutiplied.colCount};
 
 		for(int i=0; i<this->rowCount;++i)
@@ -218,7 +220,6 @@ public:
 					rt.set(i, j, rt[i][j] + (this->mainData[i][k] * mutiplied[k][j]) );
 		return rt;
 	}
-
 	inline Matrix<Type> operator*(const Type& opVal)
 	{
 		Matrix<Type> rt{*this};
@@ -230,6 +231,7 @@ public:
 		return rt;
 	}
 
+
 	inline Matrix<Type> operator/(const Type& opVal)
 	{
 		Matrix<Type> rt{*this};
@@ -240,9 +242,7 @@ public:
 
 		return rt;
 	}
-//	Matrix<Type>  operator/(const Matrix<Type>& devided)
-//	{return (*this)*reciprocal(devided);}
-//	A/B = A*(1/B)
+
 	
 	inline Matrix<Type>& operator=(const Matrix<Type>& designated)
 	{
@@ -263,7 +263,6 @@ public:
 				this->mainData[i][j] = designated[i][j];
 		return *this;
 	}
-
 	inline bool operator==(const Matrix<Type>& matched)
 	{
 		if(this->rowCount != matched.rowCount ||
@@ -276,6 +275,7 @@ public:
 					return false;
 		return true;
 	}
+
 
 	inline bool operator!=(const Matrix<Type>& matched)
 	{return !(*this == matched);}

@@ -6,14 +6,15 @@ using namespace Math;
 
 int main(void)
 {
-	
-	MatrixOP<double> trye{4,5};
-	trye.rndSet(5.7, 11.9);
 
-	MatrixOP<double> tttt{5,4};
-	tttt.rndSet(5.7, 11.9);
+	MatrixOP<double> t{{9},{18}};
 
-	cout << trye*tttt;
+
+	MatrixOP<double> tt{{1,2,3,4},{2,4,6,8}};
+
+	tt.singleRowOP(t, operate::Divide, true);
+
+	cout << tt <<endl;
 
 	return 0;
 }
