@@ -47,16 +47,10 @@ public:
 	{
 		if(col && row)
 		{
-			this->mainData = new Type*[rowCount];
+			this->mainData = new Type[rowCount * colCount];
 
-			for(int i=0; i<rowCount ;++i)
-			{
-				this->mainData[i] = new Type[colCount];
-		
-				for(int j=0; j<colCount ;++j)
-					this->mainData[i][j] = 0;
-
-			}
+			for(int i=0; i<rowCount*colCount ;++i)
+				this->mainData[i] = 0;
 		}
 		else
 			this->mainData = nullptr;
@@ -64,71 +58,45 @@ public:
 
 	Matrix(Type** copied, int row, int col) : rowCount{row} , colCount{col}
 	{
-
-		this->mainData = new Type*[rowCount];
+		this->mainData = new Type[rowCount * colCount];
 
 		for(int i=0; i<rowCount ;++i)
 		{
-			this->mainData[i] = new Type[colCount];
-
+			int colu = i*colCount;
 			for(int j=0; j<colCount ;++j)
-				this->mainData[i][j] = copied[i][j];
+				this->mainData[colu + j] = copied(i, j);
 		}
 	}
 
 	Matrix(const Matrix<Type>& matrix) : rowCount{matrix.rowCount} , colCount{matrix.colCount}
 	{
 	
-		this->mainData = new Type*[rowCount];
+		this->mainData = new Type[rowCount * colCount];
 
 		for(int i=0; i<rowCount ;++i)
 		{
-		
-			this->mainData[i] = new Type[colCount];
-
+			int colu = i * colCount;
 			for(int j=0; j<colCount ;++j)
-				this->mainData[i][j] = matrix[i][j];
-		
-		}
-	
+				this->mainData[colu + j] = matrix(i, j);
+		}	
 	}
 
 	Matrix(std::initializer_list<std::initializer_list<Type>> initList)
 	   	: rowCount{(int)initList.size()} , colCount{(int)(*initList.begin() ).size()}
 	{
 
-		this->mainData = new Type*[rowCount];
+		this->mainData = new Type[rowCount * colCount];
 
 		for(int i=0; i<rowCount ;++i)
 		{
-			this->mainData[i] = new Type[colCount];
-
+			int colu = i * colCount;
 			for(int j=0; j<colCount ;++j)
-				this->mainData[i][j] = *(((initList.begin()+i)->begin()) + j);
+				this->mainData[colu + j] = *(((initList.begin()+i)->begin()) + j);
 		}
 	}
 	
-	Matrix(const Vectors<Type>* copied, int row, int col) : rowCount{row} , colCount{col}
-	{
-
-		this->mainData = new Type*[rowCount];
-
-		for(int i=0; i<rowCount ;++i)
-		{
-			this->mainData[i] = new Type[colCount];
-
-			for(int j=0; j<colCount ;++j)
-				this->mainData[i][j] = copied[i][j];
-		}
-
-	}
-
 	~Matrix()
 	{
-	
-		for	(int i=0; i<rowCount ;++i)
-			delete this->mainData[i];
-		
 		delete this->mainData;
 	}
 
@@ -138,7 +106,7 @@ public:
 	{
 		if(!(0 <= row < rowCount || 0 <= col < colCount))
 			return false;
-		this->mainData[row][col] = val;
+		this->mainData[row*colCount + col] = val;
 		return true;
 	}
 
@@ -156,11 +124,9 @@ public:
 
 //Matrix operator
 
-	inline Type* operator[](int row) const
+	inline Type operator()(int row, int col) const
 	{
-		if(row >= rowCount)
-			return nullptr;
-		return this->mainData[row];
+		return this->mainData[row*colCount +col];
 	}
 
 
@@ -173,7 +139,7 @@ public:
 
 		for(int i=0; i<added.rowCount ;++i)
 			for(int j=0; j<added.colCount ;++j)
-				rt.set(i, j, this->mainData[i][j] + added[i][j]);
+				rt.set(i, j, this->mainData[i*colCount + j] + added(i,j));
 		return rt;
 	}
 	inline Matrix<Type> operator+(const Type& opVal)
@@ -182,7 +148,7 @@ public:
 
 		for(int i=0; i<rowCount ;++i)
 			for(int j=0; j<colCount ;++j)
-				rt.set(i, j, rt[i][j]+opVal);
+				rt.set(i, j, rt(i,j)+opVal);
 
 		return rt;
 	}
@@ -197,7 +163,7 @@ public:
 
 		for(int i=0; i<minus.rowCount ;++i)
 			for(int j=0; j<minus.colCount ;++j)
-				rt.set(i, j, this->mainData[i][j] - minus[i][j]);
+				rt.set(i, j, this->mainData[i*colCount + j] - minus(i,j));
 		return rt;
 	}
 	inline Matrix<Type>operator-(const Type& opVal)
@@ -206,7 +172,7 @@ public:
 
 		for(int i=0; i<rowCount ;++i)
 			for(int j=0; j<colCount ;++j)
-				rt.set(i, j, rt[i][j]-opVal);
+				rt.set(i, j, rt(i,j)-opVal);
 	}
 
 
@@ -217,7 +183,7 @@ public:
 		for(int i=0; i<this->rowCount;++i)
 			for(int j=0; j<mutiplied.colCount ;++j)
 				for(int k=0; k<this->colCount ;++k)
-					rt.set(i, j, rt[i][j] + (this->mainData[i][k] * mutiplied[k][j]) );
+					rt.set(i, j, rt(i,j) + (this->mainData[i*colCount + k] * mutiplied(k,j) ) );
 		return rt;
 	}
 	inline Matrix<Type> operator*(const Type& opVal)
@@ -226,7 +192,7 @@ public:
 
 		for(int i=0; i<rowCount ;++i)
 			for(int j=0; j<colCount ;++j)
-				rt.set(i, j, rt[i][j]*opVal);
+				rt.set(i, j, rt(i,j)*opVal);
 
 		return rt;
 	}
@@ -238,7 +204,7 @@ public:
 
 		for(int i=0; i<rowCount ;++i)
 			for(int j=0; j<colCount ;++j)
-				rt.set(i, j, rt[i][j]/opVal);
+				rt.set(i, j, rt(i,j)/opVal);
 
 		return rt;
 	}
@@ -252,15 +218,13 @@ public:
 			this->colCount = designated.colCount;
 
 			delete this->mainData;
-			this->mainData = new Type*[rowCount];
-
-			for(int i=0; i<rowCount ;++i)
-				this->mainData[i] = new Type[colCount];
+			this->mainData = new Type[rowCount * colCount];
 		}
 
 		for(int i=0; i<this->rowCount ;++i)
 			for(int j=0; j<this->colCount ;++j)
-				this->mainData[i][j] = designated[i][j];
+				this->mainData[i*colCount + j] = designated(i,j);
+
 		return *this;
 	}
 	inline bool operator==(const Matrix<Type>& matched)
@@ -271,7 +235,7 @@ public:
 	
 		for(int i=0; i<this->rowCount ;++i)
 			for(int j=0; j<this->colCount ;++j)
-				if(this->mainData[i][j] != matched[i][j])
+				if(this->mainData[i*colCount + j] != matched(i,j))
 					return false;
 		return true;
 	}
@@ -285,7 +249,7 @@ public:
 	int colCount ,rowCount;
 
 protected:
-	Type** mainData;
+	Type* mainData;
 };
 
 };
