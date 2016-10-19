@@ -23,7 +23,7 @@ public:
 	MatrixOP(int row,int col) : Matrix<Type>{row, col}
 	{}
 
-	MatrixOP(Matrix<Type> init) : Matrix<Type>{init}
+	MatrixOP(const Matrix<Type>& init) : Matrix<Type>{init}
 	{}
 
 	MatrixOP(std::initializer_list<std::initializer_list<Type>> initList) : Matrix<Type>{initList}
@@ -48,7 +48,8 @@ public:
 			}
 
 			os << "]\n";
-		}	
+		}
+
 		return os;
 	}
 
@@ -81,9 +82,15 @@ public:
 
 	inline MatrixOP<Type> operator/(const MatrixOP<Type>& divided)
 	{
-		if(divided.rowCount != divided.colCount && this->rowCount != divided.colCount)
-			return MatrixOP<Type>();
-		
+		if(Matrix<Type>::colCount != divided.rowCount)
+		{
+				std::cerr << "\033[1;31mWarning\033[0m:: the MatrixOP size are not aligned :" <<
+				" (" << Matrix<Type>::rowCount << ',' << Matrix<Type>::colCount << ") (" <<
+				divided.rowCount << ',' << divided.colCount << ")\n";
+
+			exit(-1);
+		}
+
 		return *this * divided.inverse();
 	}
 	inline MatrixOP<Type> operator/(const Type& opVal)
@@ -111,28 +118,30 @@ public:
 
 // Line operate==================================================================
 
-	void inlineOperate(int lineCount, Type value, operate op)
+	void inlineOP(int lineCount, Type value, operate op)//inlineOP
 	{
+		int basic{lineCount*Matrix<Type>::colCount};
+
 		switch(op)
 		{
 			case operate::Add:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[lineCount*Matrix<Type>::colCount + i] += value;
+					this->mainData[basic + i] += value;
 				break;
 
 			case operate::Minus:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[lineCount*Matrix<Type>::colCount + i] -= value;
+					this->mainData[basic + i] -= value;
 				break;
 
 			case operate::Mutiply:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[lineCount*Matrix<Type>::colCount + i] *= value;
+					this->mainData[basic + i] *= value;
 				break;
 
 			case operate::Divide:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[lineCount*Matrix<Type>::colCount + i] /= value;
+					this->mainData[basic + i] /= value;
 				break;
 	
 			default:
@@ -140,28 +149,30 @@ public:
 		}
 	}
 
-	void lnlOperate(int firstLine, int secondLine, operate op, Type rate = 1)
+	void lnlOP(int firstLine, int secondLine, operate op, Type rate = 1)//lnlOP
 	{
+		int basic{firstLine*Matrix<Type>::colCount};
+
 		switch(op)
 		{
 			case operate::Add:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[firstLine*Matrix<Type>::colCount + i] += (*this)(secondLine, i)*rate;
+					this->mainData[basic + i] += (*this)(secondLine, i)*rate;
 				break;
 
 			case operate::Minus:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[firstLine*Matrix<Type>::colCount + i] = (*this)(secondLine, i)*rate - (*this)(firstLine, i);
+					this->mainData[basic + i] = (*this)(secondLine, i)*rate - (*this)(firstLine, i);
 				break;
 
 			case operate::Mutiply:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[firstLine*Matrix<Type>::colCount + i] *= (*this)(secondLine, i)*rate;
+					this->mainData[basic + i] *= (*this)(secondLine, i)*rate;
 				break;
 
 			case operate::Divide:
 				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[firstLine*Matrix<Type>::colCount + i] = ((*this)(secondLine, i)*rate) / (*this)(firstLine, i);
+					this->mainData[basic + i] = ((*this)(secondLine, i)*rate) / (*this)(firstLine, i);
 				break;
 
 			default:
@@ -169,149 +180,156 @@ public:
 		}
 	}
 
-	void singleRowOP(MatrixOP<Type> single, operate op, bool formerFlag)
+	void One2RowOP(MatrixOP<Type> single, operate op, bool formerFlag)//singleRowOP
 	{
-
 		if(single.rowCount != Matrix<Type>::rowCount || single.colCount != 1)
+		{
+			std::cerr << "\033[1;31mWarning\033[0m:: In One2RowOP, the single line matrix input isn't right size\n";
 			return;
-
-		if(formerFlag)
-		{
-			switch(op)
-			{
-				case operate::Add:
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-						for(int j=0; j<Matrix<Type>::colCount ;++i)
-							this->mainData[i*Matrix<Type>::colCount + j] += single(i, 0);
-					break;
-
-				case operate::Minus:
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[i*Matrix<Type>::colCount + j] = single(i, 0) - (*this)(i ,j);
-					break;
-
-				case operate::Mutiply:
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[i*Matrix<Type>::colCount + j] *= single(i, 0);
-					break;
-
-				case operate::Divide:
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[i*Matrix<Type>::colCount + j] = single(i, 0) / (*this)(i,j);
-					break;
-
-				default:
-					return;
-			}
-
 		}
-		else
+
+		int basic{0};
+		switch(op)
 		{
-			switch(op)
-			{
-				case operate::Add:
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-						for(int j=0; j<Matrix<Type>::colCount ;++i)
-							this->mainData[i*Matrix<Type>::colCount + j] += single(i, 0);
-					break;
+			case operate::Add:
+				for(int i=0; i<Matrix<Type>::rowCount ;++i)
+				{
+					for(int j=0; j<Matrix<Type>::colCount ;++i)
+						this->mainData[basic + j] += single(i, 0);
+					basic += Matrix<Type>::colCount;
+				}
+				break;
 
-				case operate::Minus:
+			case operate::Minus:
+				if(formerFlag)
+				{
 					for(int i=0; i<Matrix<Type>::rowCount ;++i)
+					{
 						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[i*Matrix<Type>::colCount + j] -= single(i, 0);
-					break;
-
-				case operate::Mutiply:
+							this->mainData[basic + j] = single(i, 0) - (*this)(i ,j);
+						basic += Matrix<Type>::colCount;
+					}
+				}
+				else
+				{
 					for(int i=0; i<Matrix<Type>::rowCount ;++i)
+					{
 						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[i*Matrix<Type>::colCount + j] *= single(i, 0);
-					break;
+							this->mainData[basic + j] -= single(i, 0);
+						basic += Matrix<Type>::colCount;
+					}
+				}
 
-				case operate::Divide:
+				break;
+
+			case operate::Mutiply:
+				for(int i=0; i<Matrix<Type>::rowCount ;++i)
+				{
+					for(int j=0; j<Matrix<Type>::colCount ;++j)
+						this->mainData[basic + j] *= single(i, 0);
+					basic += Matrix<Type>::colCount;
+				}
+				break;
+
+			case operate::Divide:
+				if(formerFlag)
+				{
 					for(int i=0; i<Matrix<Type>::rowCount ;++i)
+					{
 						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[i*Matrix<Type>::colCount + j] /= single(i, 0);
-					break;
+							this->mainData[basic + j] = single(i, 0) / (*this)(i,j);
+						basic += Matrix<Type>::colCount;
+					}
+				}
+				else
+				{
+					for(int i=0; i<Matrix<Type>::rowCount ;++i)
+					{
+						for(int j=0; j<Matrix<Type>::colCount ;++j)
+							this->mainData[basic + j] /= single(i, 0);
+						basic += MatrixOP<Type>::colCount;
+					}
+				}
+				break;
 
-				default:
-					return;
-			}
+			default:
+				return;
 		}
 	}
 
-	void singleColOP(MatrixOP<Type> single, operate op, bool formerFlag)
+	void One2ColOP(MatrixOP<Type> single, operate op, bool formerFlag)//singleColOP
 	{
-
-		if(single.colCount != Matrix<Type>::colCount || single.rowCount != 1)
+		if(single.colCount != Matrix<Type>::colCount || single.colCount != 1)
+		{
+			std::cerr << "\033[1;31mWarning\033[0m:: In One2ColOP, the single line matrix input isn't right size\n";
 			return;
-
-		if(formerFlag)
-		{
-			switch(op)
-			{
-				case operate::Add:
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-						for(int j=0; j<Matrix<Type>::colCount ;++i)
-							this->mainData[i*Matrix<Type>::colCount + j] += single(0, j);
-					break;
-
-				case operate::Minus:
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[i*Matrix<Type>::colCount + j] = single(0, j) - (*this)(i,j);
-					break;
-
-				case operate::Mutiply:
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[i*Matrix<Type>::colCount + j] *= single(0, j);
-					break;
-
-				case operate::Divide:
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[i*Matrix<Type>::colCount + j] = single(0, j) / (*this)(i,j);
-					break;
-
-				default:
-					return;
-			}
-
 		}
-		else
+		
+		int basic{0};
+		switch(op)
 		{
-			switch(op)
-			{
-				case operate::Add:
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-						for(int j=0; j<Matrix<Type>::colCount ;++i)
-							this->mainData[i*Matrix<Type>::colCount + j] += single(0,j);
-					break;
+			case operate::Add:
+				for(int i=0; i<Matrix<Type>::rowCount ;++i)
+				{
+					for(int j=0; j<Matrix<Type>::colCount ;++i)
+						this->mainData[basic + j] += single(0, j);
+					basic += Matrix<Type>::colCount;
+				}
+				break;
 
-				case operate::Minus:
+			case operate::Minus:
+				if(formerFlag)
+				{
 					for(int i=0; i<Matrix<Type>::rowCount ;++i)
+					{
 						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[i*Matrix<Type>::colCount + j] -= single(0,j);
-					break;
-
-				case operate::Mutiply:
+							this->mainData[basic + j] = single(0, j) - (*this)(i,j);
+						basic += Matrix<Type>::colCount;
+					}
+				}
+				else
+				{
 					for(int i=0; i<Matrix<Type>::rowCount ;++i)
+					{
 						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[i*Matrix<Type>::colCount + j] *= single(0,j);
-					break;
+							this->mainData[basic + j] -= single(0,j);
+						basic += Matrix<Type>::colCount;
+					}
+				}
+				break;
 
-				case operate::Divide:
+			case operate::Mutiply:
+				for(int i=0; i<Matrix<Type>::rowCount ;++i)
+				{
+					for(int j=0; j<Matrix<Type>::colCount ;++j)
+						this->mainData[basic + j] *= single(0, j);
+					basic += Matrix<Type>::colCount;
+				}
+				break;
+
+			case operate::Divide:
+				if(formerFlag)
+				{
 					for(int i=0; i<Matrix<Type>::rowCount ;++i)
+					{
 						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[i*Matrix<Type>::colCount + j] /= single(0,j);
-					break;
+							this->mainData[basic + j] = single(0, j) / (*this)(i,j);
+						basic += Matrix<Type>::colCount;
+					}
+				}
+				else
+				{
+					for(int i=0; i<Matrix<Type>::rowCount ;++i)
+					{
+						for(int j=0; j<Matrix<Type>::colCount ;++j)
+							this->mainData[basic + j] /= single(0,j);
+						basic += Matrix<Type>::colCount;
+					}
+				}
+				break;
 
-				default:
-					return;
-			}
+			default:
+				return;
 		}
 	}
 
@@ -321,10 +339,14 @@ public:
 	{
 		std::uniform_real_distribution<Type> unif(down, up);
 		std::default_random_engine rnd;
+		int basic{0};
 
 		for(int i=0; i<Matrix<Type>::rowCount ;++i)
+		{
 			for(int j=0; j<Matrix<Type>::colCount ;++j)
-				this->mainData[i*Matrix<Type>::colCount + j] = unif(rnd);
+				this->mainData[basic + j] = unif(rnd);
+			basic += Matrix<Type>::colCount;
+		}
 	}
 
 	inline Type sum()
@@ -341,7 +363,7 @@ public:
 	inline bool set(int row, int col, Type val)
 	{return Matrix<Type>::set(row, col, val);}
 
-	inline int whereFirst(int count)  //For solution to determine
+	inline int firstCol(int count) //firstCol  //For solution to determine
 	{
 		for(int i=0; i<=Matrix<Type>::colCount ;++i)
 			if( (*this)(count ,i) != 0)
@@ -406,31 +428,32 @@ public:
 			return;
 
 		auto buf = new Type[Matrix<Type>::colCount];
+		int basic{first * Matrix<Type>::colCount};
 
 		for(int i=0; i<Matrix<Type>::colCount ;++i)
 			buf[i] = (*this)(first, i);
 
 		for(int i=0; i<Matrix<Type>::colCount ;++i)
-			this->mainData[first*Matrix<Type>::colCount + i] = (*this)(second, i);
+			this->mainData[basic + i] = (*this)(second, i);
 
+		basic = second * Matrix<Type>::colCount;
 		for(int i=0; i<Matrix<Type>::colCount ;++i)
-			this->mainData[second*Matrix<Type>::colCount + i] = buf[i];
+			this->mainData[basic + i] = buf[i];
 	}
 
-	inline void descend_arrange(bool recordFlag, MatrixOP<Type>& recordOne)
+	inline void descend_arrange(MatrixOP<Type>& recordOne)
 	{
 		int lineRef[Matrix<Type>::rowCount];
 
 		for(int i=0; i<Matrix<Type>::colCount ;++i)
-			lineRef[i] = whereFirst(i);
+			lineRef[i] = firstCol(i);
 
 		arrange(lineRef, Matrix<Type>::colCount);
 
 		for(int i=0; i<Matrix<Type>::colCount ;++i)
 		{
 			changeLine(i,lineRef[i]);
-			if(recordFlag)
-				recordOne.changeLine(i,lineRef[i]);
+			recordOne.changeLine(i,lineRef[i]);
 		}
 	}
 
@@ -439,7 +462,7 @@ public:
 		int lineRef[Matrix<Type>::rowCount];
 
 		for(int i=0; i<Matrix<Type>::colCount ;++i)
-			lineRef[i] = whereFirst(i);
+			lineRef[i] = firstCol(i);
 
 		arrange(lineRef, Matrix<Type>::colCount);
 
@@ -449,32 +472,26 @@ public:
 
 	MatrixOP<Type> Gauss_solution()
 	{
-
 		MatrixOP<Type> rt{*this};
-		int status{rt.whereFirst(0)};
+		int status{0};
 
 		for(int i=0; i<Matrix<Type>::rowCount ;++i)
-		{
-			
-			status = rt.whereFirst(i);
+		{	
+			status = rt.firstCol(i);
 
 			if(status == -1 || status >= Matrix<Type>::colCount)
 				return MatrixOP<Type>{0,0};
 			//The status is illogical.
 
-			rt.inlineOperate(i, 1/rt(i, status), Math::operate::Mutiply);
+			rt.inlineOP(i, 1/rt(i, status), Math::operate::Mutiply);
 
 			for(int j=0; j<Matrix<Type>::rowCount ;++j)
 			{
-
 				if(rt(j, status) == 0 || i==j)
 					continue;
-				rt.lnlOperate(j, i, Math::operate::Minus, rt(j, status));
-
+				rt.lnlOP(j, i, Math::operate::Minus, rt(j, status));
 			}
-
 		}
-
 		rt.descend_arrange();
 
 		return rt;
@@ -482,7 +499,6 @@ public:
 
 	MatrixOP<Type> inverse()
 	{
-	
 		if(Matrix<Type>::rowCount != Matrix<Type>::colCount)
 			return MatrixOP<Type>{0,0};
 	
@@ -492,34 +508,29 @@ public:
 		for(int i=0; i<Matrix<Type>::rowCount ;++i)
 			rt.set(i, i, 1);
 
-		int status{solutionOne.whereFirst(0)};
+		int status{0};
 
 		for(int i=0; i<Matrix<Type>::rowCount ;++i)
 		{
-			
-			status = solutionOne.whereFirst(i);
+			status = solutionOne.firstCol(i);
 
 			if(status == -1 || status >= Matrix<Type>::colCount)
 				return MatrixOP<Type>{0,0};
 			//The status is illogical.
 
-			rt.inlineOperate(i, 1/solutionOne(i, status), Math::operate::Mutiply);
-			solutionOne.inlineOperate(i, 1/solutionOne(i, status), Math::operate::Mutiply);
-
+			rt.inlineOP(i, 1/solutionOne(i, status), Math::operate::Mutiply);
+			solutionOne.inlineOP(i, 1/solutionOne(i, status), Math::operate::Mutiply);
 
 			for(int j=0; j<Matrix<Type>::rowCount ;++j)
 			{
-
 				if(solutionOne(j, status) == 0 || i==j)
 					continue;
-				rt.lnlOperate(j, i, Math::operate::Minus, solutionOne(j, status));
-				solutionOne.lnlOperate(j, i, Math::operate::Minus, solutionOne(j, status));
-
+				rt.lnlOP(j, i, Math::operate::Minus, solutionOne(j, status));
+				solutionOne.lnlOP(j, i, Math::operate::Minus, solutionOne(j, status));
 			}
-
 		}
 
-		solutionOne.descend_arrange(true, rt);
+		solutionOne.descend_arrange(rt);
 
 		return rt;
 	}
