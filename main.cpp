@@ -7,9 +7,10 @@ using namespace Math;
 int main(void)
 {
 
-	MatrixOP<double> tt{{3,4},{5,1}};
+	MatrixOP<double> ss{{2,4},{5,6}};
 
-	cout << tt.inverse()*tt <<endl;
+
+	cout << ss.Gauss_solution() << endl;
 
 	return 0;
 }
