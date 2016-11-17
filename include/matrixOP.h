@@ -156,23 +156,23 @@ public:
 		switch(op)
 		{
 			case operate::Add:
-				for(int i=0; i< Matrix<Type>::rowCount ;++i)
+				for(int i=0; i< Matrix<Type>::colCount ;++i)
 					this->mainData[basic + i] += (*this)(secondLine, i)*rate;
 				break;
 
 			case operate::Minus:
-				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[basic + i] = (*this)(secondLine, i)*rate - (*this)(firstLine, i);
+				for(int i=0; i< Matrix<Type>::colCount ;++i)
+					this->mainData[basic + i] = (*this)(firstLine, i) - (*this)(secondLine, i)*rate;
 				break;
 
 			case operate::Mutiply:
-				for(int i=0; i< Matrix<Type>::rowCount ;++i)
+				for(int i=0; i< Matrix<Type>::colCount ;++i)
 					this->mainData[basic + i] *= (*this)(secondLine, i)*rate;
 				break;
 
 			case operate::Divide:
-				for(int i=0; i< Matrix<Type>::rowCount ;++i)
-					this->mainData[basic + i] = ((*this)(secondLine, i)*rate) / (*this)(firstLine, i);
+				for(int i=0; i< Matrix<Type>::colCount ;++i)
+					this->mainData[basic + i] = (*this)(firstLine, i) / ((*this)(secondLine, i)*rate);
 				break;
 
 			default:
@@ -476,14 +476,15 @@ public:
 		int status{0};
 
 		for(int i=0; i<Matrix<Type>::rowCount ;++i)
-		{	
+		{
+			std::cout << rt << std::endl;	
 			status = rt.firstCol(i);
 
 			if(status == -1 || status >= Matrix<Type>::colCount)
 				return MatrixOP<Type>{0,0};
 			//The status is illogical.
 
-			rt.inlineOP(i, 1/rt(i, status), Math::operate::Mutiply);
+				rt.inlineOP(i, 1/rt(i, status), Math::operate::Mutiply);
 
 			for(int j=0; j<Matrix<Type>::rowCount ;++j)
 			{
@@ -492,6 +493,9 @@ public:
 				rt.lnlOP(j, i, Math::operate::Minus, rt(j, status));
 			}
 		}
+
+		std::cout << rt << std::endl;
+
 		rt.descend_arrange();
 
 		return rt;
@@ -555,6 +559,49 @@ public:
 		}
 
 		return rt;
+	}
+
+	inline MatrixOP<Type> dot_product(const MatrixOP<Type>& mutiplied)
+	{
+		if(is_same_size(mutiplied))
+		{
+			std::cerr << "\033[1;31mWarning\033[0m:: the MatrixOP size are not aligned in dot product :" <<
+			" (" << Matrix<Type>::rowCount << ',' << Matrix<Type>::colCount << ") (" <<
+			mutiplied.rowCount << ',' << mutiplied.colCount << ")\n";
+
+			exit(-1);
+		}
+
+		MatrixOP<Type> rt{mutiplied};
+
+		int basic{0};
+		for(int i=0; i<rt.rowCount ;++i)
+		{
+			basic = i*Matrix<Type>::colCount;
+			for(int j=0; j<rt.colCount ;++j)
+				rt.set(i, j, rt(i, j) * this->mainData[basic + j]);
+		}
+		
+		return rt;
+	}	
+
+	void setAll(Type func(Type))
+	{
+		int basic{0};
+
+		for(int i=0; i<Matrix<Type>::rowCount ;++i)
+		{
+			basic = i*Matrix<Type>::colCount;
+			for(int j=0; j<Matrix<Type>::colCount ;++j)
+				this->mainData[basic + j] = func(this->mainData[basic+j]);
+		}
+	}
+
+	inline void zero()
+	{
+		for(int i=0; i<Matrix<Type>::rowCount ;++i)
+			for(int j=0; j<Matrix<Type>::colCount ;++j)
+				set(i, j, 0);
 	}
 
 };

@@ -111,6 +111,21 @@ public:
 		return true;
 	}
 
+	inline Matrix<Type> dot_product(const Matrix<Type>& mutiplied)
+	{
+		Matrix<Type> rt{mutiplied};
+
+		int basis{0};
+		for(int i=0; i<rt.rowCount ;++i)
+		{
+			basis = i*colCount;
+			for(int j=0; j<rt.colCount ;++i)
+				rt.set(i, j, rt(i,j)*this->mainData[basis+j]);
+		}	
+
+		return rt;
+	}
+
 //Matrix operator
 
 	inline Type operator()(int row, int col) const
@@ -259,8 +274,7 @@ public:
 
 	int colCount ,rowCount;
 
-protected:
-	Type* mainData;
+	protected Type* mainData;
 };
 
 };
