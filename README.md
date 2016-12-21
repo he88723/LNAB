@@ -122,28 +122,28 @@ See the function of `MatrixOP`.
 
 ```C++
 void changeLine(int first, int second);
-void inlineOP(int line, Type value, operate op);
-void lnlOP(int fLine, int sLine, operate op, Type rate = 1);
+void inline_operate(int line, Type value, operate op);
+void lines_operate(int fLine, int sLine, operate op, Type rate = 1);
 ```
 The `changeLine(int ,int)` swap two rows in `MatrixOP` by the `first` and `second`.<br/>
-The `inlineOP(int, Type, operate)` make the element of `line` row calculate with `value` by `operate` meaning.<br/>
+The `inline_operate(int, Type, operate)` make the element of `line` row calculate with `value` by `operate` meaning.<br/>
 The `operate` is an enum be defined as the following.
 ```C++
 enum operate{Add, Minus, Mutiply, Divide};
 ```
-The `lnlOP(int, int, operate, Type)` make `fLine` row calculate with `sLine` row by `operate` meaning.
+The `lines_operatr(int, int, operate, Type)` make `fLine` row calculate with `sLine` row by `operate` meaning.
 Notice, the element of `sLine` row will be multiplied by `rate`.<br/>
 
 ```C++
 inline Type sum();
 void rndSet(Type up, Type down);
-MatrixOP<Type> subMatrix(const Point& pointA, const Point& pointB);
-MatrixOP<Type> subMatrixEpoint(const Point Epoint);
+MatrixOP<Type> sub(const Point& pointA, const Point& pointB);
+MatrixOP<Type> sub_by_point(const Point Epoint);
 ```
 The `sum()` will return a value of the sum of all elements in `MatrixOP`.<br/>
 The `rndSet(Type, Type)` will set the elements of `MatrixOP` to a random value between `up` and `down`.<br/>
-The `subMatrix(Point, Point)` will cut the `MatrixOP` from `PointA` to `PointB`. <br/>
-The `subMatrixEpoint(Point)` will cut the `MatrixOP` by `Epoint`.<br/>
+The `sub(Point, Point)` will cut the `MatrixOP` from `PointA` to `PointB`. <br/>
+The `sub_by_point(Point)` will cut the `MatrixOP` by `Epoint`.<br/>
 See the following code to understand more exhaustive.
 ```C++
 MatrixOP<int> cuted{{1,2,3},{4,5,6},{7,8,9}};
@@ -154,9 +154,9 @@ Point p1{0,0};
 Point p2{1,1};
 //Center
 
-sub = cuted.subMatrix(p1, p2);
+sub = cuted.sub(p1, p2);
 //The `sub` will be reviced as {{1,2},{4,5}}.
-sub = cuted.subMatrixEpoint(p2);
+sub = cuted.sub_by_point(p2);
 //The `sub will be reviced as {{1,3},{7,9}}.
 ```
 

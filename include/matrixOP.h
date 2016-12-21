@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <random>
+#include <ctime>
 
 namespace Math
 {
@@ -113,12 +114,17 @@ public:
 		return Matrix<Type>::operator()(row, col);
 	}
 
+	void showShape()
+	{
+		std::cout << Matrix<Type>::rowCount << " : " << Matrix<Type>::colCount << '\n';
+	}
+
 //===============================================================================
 
 
 // Line operate==================================================================
 
-	void inlineOP(int lineCount, Type value, operate op)//inlineOP
+	void inline_operate(int lineCount, Type value, operate op)//inline_operate
 	{
 		int basic{lineCount*Matrix<Type>::colCount};
 
@@ -149,7 +155,7 @@ public:
 		}
 	}
 
-	void lnlOP(int firstLine, int secondLine, operate op, Type rate = 1)//lnlOP
+	void lines_operate(int firstLine, int secondLine, operate op, Type rate = 1)//lines_operate
 	{
 		int basic{firstLine*Matrix<Type>::colCount};
 
@@ -180,165 +186,12 @@ public:
 		}
 	}
 
-	void One2RowOP(MatrixOP<Type> single, operate op, bool formerFlag)//singleRowOP
-	{
-		if(single.rowCount != Matrix<Type>::rowCount || single.colCount != 1)
-		{
-			std::cerr << "\033[1;31mWarning\033[0m:: In One2RowOP, the single line matrix input isn't right size\n";
-			return;
-		}
-
-		int basic{0};
-		switch(op)
-		{
-			case operate::Add:
-				for(int i=0; i<Matrix<Type>::rowCount ;++i)
-				{
-					for(int j=0; j<Matrix<Type>::colCount ;++i)
-						this->mainData[basic + j] += single(i, 0);
-					basic += Matrix<Type>::colCount;
-				}
-				break;
-
-			case operate::Minus:
-				if(formerFlag)
-				{
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-					{
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[basic + j] = single(i, 0) - (*this)(i ,j);
-						basic += Matrix<Type>::colCount;
-					}
-				}
-				else
-				{
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-					{
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[basic + j] -= single(i, 0);
-						basic += Matrix<Type>::colCount;
-					}
-				}
-
-				break;
-
-			case operate::Mutiply:
-				for(int i=0; i<Matrix<Type>::rowCount ;++i)
-				{
-					for(int j=0; j<Matrix<Type>::colCount ;++j)
-						this->mainData[basic + j] *= single(i, 0);
-					basic += Matrix<Type>::colCount;
-				}
-				break;
-
-			case operate::Divide:
-				if(formerFlag)
-				{
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-					{
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[basic + j] = single(i, 0) / (*this)(i,j);
-						basic += Matrix<Type>::colCount;
-					}
-				}
-				else
-				{
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-					{
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[basic + j] /= single(i, 0);
-						basic += MatrixOP<Type>::colCount;
-					}
-				}
-				break;
-
-			default:
-				return;
-		}
-	}
-
-	void One2ColOP(MatrixOP<Type> single, operate op, bool formerFlag)//singleColOP
-	{
-		if(single.colCount != Matrix<Type>::colCount || single.colCount != 1)
-		{
-			std::cerr << "\033[1;31mWarning\033[0m:: In One2ColOP, the single line matrix input isn't right size\n";
-			return;
-		}
-		
-		int basic{0};
-		switch(op)
-		{
-			case operate::Add:
-				for(int i=0; i<Matrix<Type>::rowCount ;++i)
-				{
-					for(int j=0; j<Matrix<Type>::colCount ;++i)
-						this->mainData[basic + j] += single(0, j);
-					basic += Matrix<Type>::colCount;
-				}
-				break;
-
-			case operate::Minus:
-				if(formerFlag)
-				{
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-					{
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[basic + j] = single(0, j) - (*this)(i,j);
-						basic += Matrix<Type>::colCount;
-					}
-				}
-				else
-				{
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-					{
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[basic + j] -= single(0,j);
-						basic += Matrix<Type>::colCount;
-					}
-				}
-				break;
-
-			case operate::Mutiply:
-				for(int i=0; i<Matrix<Type>::rowCount ;++i)
-				{
-					for(int j=0; j<Matrix<Type>::colCount ;++j)
-						this->mainData[basic + j] *= single(0, j);
-					basic += Matrix<Type>::colCount;
-				}
-				break;
-
-			case operate::Divide:
-				if(formerFlag)
-				{
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-					{
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[basic + j] = single(0, j) / (*this)(i,j);
-						basic += Matrix<Type>::colCount;
-					}
-				}
-				else
-				{
-					for(int i=0; i<Matrix<Type>::rowCount ;++i)
-					{
-						for(int j=0; j<Matrix<Type>::colCount ;++j)
-							this->mainData[basic + j] /= single(0,j);
-						basic += Matrix<Type>::colCount;
-					}
-				}
-				break;
-
-			default:
-				return;
-		}
-	}
-
 //=======================================================================================
 
 	void rndSet(Type up, Type down)
 	{
 		std::uniform_real_distribution<Type> unif(down, up);
-		std::default_random_engine rnd;
+		std::default_random_engine rnd(time(0));
 		int basic{0};
 
 		for(int i=0; i<Matrix<Type>::rowCount ;++i)
@@ -363,7 +216,7 @@ public:
 	inline bool set(int row, int col, Type val)
 	{return Matrix<Type>::set(row, col, val);}
 
-	inline int firstCol(int count) //firstCol  //For solution to determine
+	inline int pivot_Pos(int count)		//Get pivot position
 	{
 		for(int i=0; i<=Matrix<Type>::colCount ;++i)
 			if( (*this)(count ,i) != 0)
@@ -371,7 +224,7 @@ public:
 		return -1;
 	}
 
-	MatrixOP<Type> subMatrix(const Point& pointA, const Point& pointB) //need test
+	MatrixOP<Type> sub(const Point& pointA, const Point& pointB) //need test
 	{
 		MatrixOP<Type> rt{abs(pointA.x-pointB.x)+1, abs(pointA.y-pointB.y)+1};
 
@@ -385,7 +238,7 @@ public:
 		return rt;
 	}
 
-	MatrixOP<Type> subMatrixEpoint(const Point Epoint) //need test
+	MatrixOP<Type> sub_by_point(const Point Epoint) //need test
 	{
 		MatrixOP<Type> rt{Matrix<Type>::rowCount-1, Matrix<Type>::colCount-1};
 
@@ -446,7 +299,7 @@ public:
 		int lineRef[Matrix<Type>::rowCount];
 
 		for(int i=0; i<Matrix<Type>::colCount ;++i)
-			lineRef[i] = firstCol(i);
+			lineRef[i] = pivot_Pos(i);
 
 		arrange(lineRef, Matrix<Type>::colCount);
 
@@ -462,7 +315,7 @@ public:
 		int lineRef[Matrix<Type>::rowCount];
 
 		for(int i=0; i<Matrix<Type>::colCount ;++i)
-			lineRef[i] = firstCol(i);
+			lineRef[i] = pivot_Pos(i);
 
 		arrange(lineRef, Matrix<Type>::colCount);
 
@@ -477,24 +330,21 @@ public:
 
 		for(int i=0; i<Matrix<Type>::rowCount ;++i)
 		{
-			std::cout << rt << std::endl;	
-			status = rt.firstCol(i);
+			status = rt.pivot_Pos(i);
 
 			if(status == -1 || status >= Matrix<Type>::colCount)
 				return MatrixOP<Type>{0,0};
 			//The status is illogical.
 
-				rt.inlineOP(i, 1/rt(i, status), Math::operate::Mutiply);
+				rt.inline_operate(i, 1/rt(i, status), Math::operate::Mutiply);
 
 			for(int j=0; j<Matrix<Type>::rowCount ;++j)
 			{
 				if(rt(j, status) == 0 || i==j)
 					continue;
-				rt.lnlOP(j, i, Math::operate::Minus, rt(j, status));
+				rt.lines_operate(j, i, Math::operate::Minus, rt(j, status));
 			}
 		}
-
-		std::cout << rt << std::endl;
 
 		rt.descend_arrange();
 
@@ -505,32 +355,37 @@ public:
 	{
 		if(Matrix<Type>::rowCount != Matrix<Type>::colCount)
 			return MatrixOP<Type>{0,0};
+		//If the matrix isn't a square matrix, the function will return a empty matrix.
 	
 		MatrixOP<Type> rt{Matrix<Type>::rowCount, Matrix<Type>::colCount};
 		MatrixOP<Type> solutionOne{*this};
+		//Use the Gauss solution to get inverse.
+		//Right part is rt, a identity matrix.
+		//Left part is solutionOne, a source matrix.
 
 		for(int i=0; i<Matrix<Type>::rowCount ;++i)
 			rt.set(i, i, 1);
+		//Set the rt to a identity matrix.
 
 		int status{0};
 
 		for(int i=0; i<Matrix<Type>::rowCount ;++i)
 		{
-			status = solutionOne.firstCol(i);
+			status = solutionOne.pivot_Pos(i);
 
 			if(status == -1 || status >= Matrix<Type>::colCount)
 				return MatrixOP<Type>{0,0};
 			//The status is illogical.
 
-			rt.inlineOP(i, 1/solutionOne(i, status), Math::operate::Mutiply);
-			solutionOne.inlineOP(i, 1/solutionOne(i, status), Math::operate::Mutiply);
+			rt.inline_operate(i, 1/solutionOne(i, status), Math::operate::Mutiply);
+			solutionOne.inline_operate(i, 1/solutionOne(i, status), Math::operate::Mutiply);
 
 			for(int j=0; j<Matrix<Type>::rowCount ;++j)
 			{
 				if(solutionOne(j, status) == 0 || i==j)
 					continue;
-				rt.lnlOP(j, i, Math::operate::Minus, solutionOne(j, status));
-				solutionOne.lnlOP(j, i, Math::operate::Minus, solutionOne(j, status));
+				rt.lines_operate(j, i, Math::operate::Minus, solutionOne(j, status));
+				solutionOne.lines_operate(j, i, Math::operate::Minus, solutionOne(j, status));
 			}
 		}
 
@@ -554,9 +409,10 @@ public:
 
 		for(int i=0; i<Matrix<Type>::rowCount ;++i)
 		{
-			rt += postive * subMatrixEpoint(Point{0,i}).det();
+			rt += postive * sub_by_point(Point{0,i}).det();
 			postive *= -1;
 		}
+		//It reduces dimensionality until the matrix be a 2*2 matrix.
 
 		return rt;
 	}
@@ -665,10 +521,7 @@ void merge_recursive(int in[], int reg[], int start, int end);
 void arrange(int in[], int len);
 
 inline int abs(int in)
-{
-	return in<0?-in:in;
-}
-
+{return in<0?-in:in;}
 
 
 #endif
