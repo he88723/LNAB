@@ -126,6 +126,14 @@ public:
 		return rt;
 	}
 
+	inline void normalization()
+	{
+		for(int i=0; i<rowCount ;++i)
+			for(int j=0; j<colCount ;++j)
+				if(mainData[i*colCount +j])
+					set(i,j,1);
+	}
+
 //Matrix operator
 
 	inline Type operator()(int row, int col) const
